@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 _cleanup_backup/
 storybook_backup.sql
+project_note.txt
