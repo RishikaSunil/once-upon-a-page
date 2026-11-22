@@ -1,0 +1,102 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Storybooks Library{% endblock %}
+{% block page_title %}Storybook Management{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h3 class="admin-card-title">Enchanted Library</h3>
+            <p class="text-muted small mb-0">{{ books|length }} total storybooks in chronicle</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin_book_new') }}" class="btn btn-sm btn-admin-primary">
+                <i class="fa-solid fa-plus me-1"></i> Add New Book
+            </a>
+        </div>
+    </div>
+
+    <!-- Books Grid/Table -->
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Cover</th>
+                    <th>Title & Author</th>
+                    <th>Category</th>
+                    <th>Spreads / Pages</th>
+                    <th>Status</th>
+                    <th>Rating</th>
+                    <th>Created</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in books %}
+                <tr>
+                    <td style="width: 60px;">
+                        <img src="{{ url_for('static', filename=b.cover) }}" alt="{{ b.title }}" style="width: 44px; height: 60px; object-fit: contain; background: #121026; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+                    </td>
+                    <td>
+                        <div class="fw-bold">{{ b.title }}</div>
+                        <div class="small text-muted">By {{ b.author }}</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-pastel-lavender text-lavender-deep">{{ b.category }}</span>
+                    </td>
+                    <td>
+                        <span class="small fw-semibold">{{ b.pages }} pages</span>
+                    </td>
+                    <td>
+                        {% if b.is_published %}
+                            <span class="badge-status badge-status-published"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Published</span>
+                        {% else %}
+                            <span class="badge-status badge-status-draft"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Draft</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="small text-muted"><i class="fa-solid fa-star text-warning me-1"></i>{{ b.rating }}</span>
+                    </td>
+                    <td class="small text-muted">{{ b.created_at_formatted }}</td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-1">
+                            <!-- Preview in Reader -->
+                            <a href="{{ url_for('admin_book_preview', book_id=b.id) }}" class="btn-admin-action" target="_blank" title="Preview in Storybook Reader">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+
+                            <!-- Edit in Storybook Builder -->
+                            <a href="{{ url_for('admin_book_edit', book_id=b.id) }}" class="btn-admin-action" title="Edit in Storybook Builder">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+
+                            <!-- Toggle Publish / Unpublish -->
+                            <form action="{{ url_for('admin_book_toggle_publish', book_id=b.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn-admin-action" title="{% if b.is_published %}Unpublish (Move to Draft){% else %}Publish to Library{% endif %}">
+                                    <i class="fa-solid {% if b.is_published %}fa-eye-slash text-muted{% else %}fa-globe text-success{% endif %}"></i>
+                                </button>
+                            </form>
+
+                            <!-- Delete Book -->
+                            <form action="{{ url_for('admin_book_delete', book_id=b.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn-admin-action btn-admin-action-danger" title="Delete Storybook" data-confirm="Are you sure you want to delete '{{ b.title }}'? This will remove its story spreads and user bookmarks.">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                        No books found. Click "Add New Book" to start creating one!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

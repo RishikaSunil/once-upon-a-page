@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Login · Once Upon a Page{% endblock %}
+
+{% block body_extra_class %}{% if site_settings and site_settings.login_bg_type in ['image', 'video'] and ((site_settings.login_bg_type == 'image' and site_settings.login_bg_image) or (site_settings.login_bg_type == 'video' and site_settings.login_bg_video)) %}has-media-bg{% endif %}{% endblock %}
+
+{% block background_media %}
+    {% if site_settings and site_settings.login_bg_type == 'video' and site_settings.login_bg_video %}
+        <!-- Fullscreen Looping Video Background (Strictly Muted without Audio, Zero Image Flash) -->
+        <div class="login-fullscreen-bg" aria-hidden="true">
+            <video 
+                id="loginBgVideo" 
+                class="login-bg-video" 
+                autoplay 
+                loop 
+                muted 
+                playsinline 
+                preload="auto">
+                <source src="{{ media_url(site_settings.login_bg_video) }}" type="video/mp4">
+                <source src="{{ media_url(site_settings.login_bg_video) }}" type="video/webm">
+                <source src="{{ media_url(site_settings.login_bg_video) }}" type="video/quicktime">
+            </video>
+            <div class="login-media-overlay"></div>
+        </div>
+        <script>
+        (function() {
+            var vid = document.getElementById('loginBgVideo');
+            if (!vid) return;
+            vid.muted = true;
+            function onReady() { vid.classList.add('video-ready'); }
+            if (vid.readyState >= 2) { onReady(); }
+            else {
+                vid.addEventListener('loadeddata', onReady, { once: true });
+                vid.addEventListener('canplay', onReady, { once: true });
+                vid.addEventListener('playing', onReady, { once: true });
+            }
+            vid.play().catch(function() {});
+        })();
+        </script>
+    {% elif site_settings and site_settings.login_bg_type == 'image' and site_settings.login_bg_image %}
+        <!-- Fullscreen Image Background -->
+        <div class="login-fullscreen-bg" aria-hidden="true">
+            <img src="{{ media_url(site_settings.login_bg_image) }}" alt="Login Background" class="login-bg-image">
+            <div class="login-media-overlay"></div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="storybook-card shadow-lg">
+
+    <!-- Decorative Top Bookmark Ribbon -->
+    <div class="bookmark-ribbon" title="Magical Bookmark">
+        <span class="ribbon-star">★</span>
+    </div>
+
+    <!-- Book Header -->
+    <header class="storybook-header text-center">
+        <div class="header-emblem mb-2">
+            <span class="emblem-sparkle left-sparkle">✨</span>
+            <span class="emblem-book">📖</span>
+            <span class="emblem-sparkle right-sparkle">✨</span>
+        </div>
+        <h1 class="storybook-title">Once Upon a Page</h1>
+        <p class="storybook-tagline">Every page holds a little magic.</p>
+        <div class="vintage-divider">
+            <span class="divider-line"></span>
+            <span class="divider-ornament">✦ ❧ ✦</span>
+            <span class="divider-line"></span>
+        </div>
+    </header>
+
+    <!-- Login Form -->
+    <form action="{{ url_for('login') }}" method="POST" class="storybook-form mt-4" novalidate id="loginForm">
+        
+        <!-- Email Input -->
+        <div class="form-group mb-3">
+            <label for="loginEmail" class="form-label storybook-label">
+                <i class="fa-solid fa-feather-pointed me-1"></i> Email Address
+            </label>
+            <div class="input-wrapper">
+                <span class="input-icon"><i class="fa-regular fa-envelope"></i></span>
+                <input 
+                    type="email" 
+                    class="form-control storybook-input" 
+                    id="loginEmail" 
+                    name="email" 
+                    placeholder="reader@fairytale.com" 
+                    value="{{ email or '' }}" 
+                    required 
+                    autocomplete="email">
+            </div>
+        </div>
+
+        <!-- Password Input with Show/Hide Toggle -->
+        <div class="form-group mb-3">
+            <label for="loginPassword" class="form-label storybook-label">
+                <i class="fa-solid fa-key me-1"></i> Secret Passphrase
+            </label>
+            <div class="input-wrapper">
+                <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                <input 
+                    type="password" 
+                    class="form-control storybook-input with-toggle" 
+                    id="loginPassword" 
+                    name="password" 
+                    placeholder="Enter your magical secret" 
+                    required 
+                    autocomplete="current-password">
+                <button 
+                    type="button" 
+                    class="btn-toggle-password" 
+                    id="toggleLoginPassword" 
+                    aria-label="Toggle password visibility">
+                    <i class="fa-regular fa-eye" id="loginEyeIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Options: Remember Me & Forgot Password -->
+        <div class="d-flex justify-content-between align-items-center mb-4 form-options">
+            <div class="form-check custom-checkbox">
+                <input class="form-check-input" type="checkbox" name="remember" id="rememberMe">
+                <label class="form-check-label storybook-check-label" for="rememberMe">
+                    Remember me
+                </label>
+            </div>
+            <a href="#" class="storybook-link forgot-password-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">
+                Forgot password?
+            </a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-storybook-primary w-100 mb-3" id="loginSubmitBtn">
+            <span class="btn-shimmer"></span>
+            <span class="btn-content">
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Open the Storybook
+            </span>
+        </button>
+
+        <!-- Link to Registration -->
+        <div class="text-center mt-3 pt-2 border-top border-pastel">
+            <p class="switch-auth-text mb-0">
+                New to our magical world? 
+                <a href="{{ url_for('register') }}" class="storybook-link fw-semibold">Begin your journey here ✦</a>
+            </p>
+        </div>
+    </form>
+
+</div>
+
+<!-- Forgot Password Charming Modal -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content storybook-modal-card">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title storybook-title-sm" id="forgotPasswordModalLabel">
+                    <i class="fa-solid fa-feather-pointed me-2"></i> Forgotten Passphrase?
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="modal-book-icon mb-3">📜✨</div>
+                <p class="storybook-modal-text">
+                    Even the wisest sorcerers sometimes misplace their enchanted keys.
+                </p>
+                <p class="storybook-modal-subtext text-muted small">
+                    During this initial phase, please reach out to the Story Keeper administrator or create a new account to continue your magical reading experience.
+                </p>
+            </div>
+            <div class="modal-footer border-0 pt-0 justify-content-center">
+                <button type="button" class="btn btn-storybook-secondary px-4" data-bs-dismiss="modal">
+                    Close the Scroll
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

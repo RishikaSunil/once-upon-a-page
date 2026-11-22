@@ -1,0 +1,262 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if book %}Edit "{{ book.title }}"{% else %}Create New Storybook{% endif %}{% endblock %}
+{% block page_title %}{% if book %}Storybook Builder: {{ book.title }}{% else %}Storybook Builder: Create Tale{% endif %}{% endblock %}
+
+{% block content %}
+<form action="{% if book %}{{ url_for('admin_book_edit', book_id=book.id) }}{% else %}{{ url_for('admin_book_new') }}{% endif %}" method="POST" enctype="multipart/form-data" id="storybookBuilderForm">
+
+    <!-- Top Action Bar -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 sticky-top bg-white p-3 rounded-4 shadow-sm border" style="top: 70px; z-index: 800;">
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('admin_books') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Books
+            </a>
+            <span class="badge bg-pastel-lavender text-lavender-deep fw-bold px-3 py-1">
+                {% if book %}{% if book.is_published %}Status: Published{% else %}Status: Draft{% endif %}{% else %}New Tale{% endif %}
+            </span>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            {% if book %}
+                <a href="{{ url_for('admin_book_preview', book_id=book.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3" target="_blank">
+                    <i class="fa-solid fa-eye me-1"></i> Preview Reader
+                </a>
+            {% endif %}
+            <button type="submit" name="action_save" value="draft" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Save as Draft
+            </button>
+            <button type="submit" name="action_save" value="publish" class="btn btn-sm btn-admin-primary rounded-pill px-4">
+                <i class="fa-solid fa-wand-magic-sparkles me-1"></i> {% if book and book.is_published %}Update Published Book{% else %}Publish Book ✨{% endif %}
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden Counter for Total Spreads -->
+    <input type="hidden" name="total_spreads_count" id="totalSpreadsCount" value="{{ spreads|length if spreads else 1 }}">
+
+    <div class="row g-4">
+        
+        <!-- =============================================================== -->
+        <!-- 1. Basic Book Information                                       -->
+        <!-- =============================================================== -->
+        <div class="col-12 col-lg-4">
+            <div class="admin-card">
+                <h4 class="admin-card-title mb-3">📖 Tale Details</h4>
+
+                <!-- Cover Image Upload & Preview -->
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Front Cover Artwork</label>
+                    <div class="page-preview-box mb-2" style="height: 240px; background-color: #121026;">
+                        <img 
+                            src="{% if book %}{{ url_for('static', filename=book.cover) }}{% endif %}" 
+                            class="page-preview-image" 
+                            id="preview_book_cover" 
+                            style="{% if book %}display: block; max-height: 220px; object-fit: contain;{% else %}display: none;{% endif %}">
+                        <div class="upload-placeholder text-center p-3 text-white-50" style="{% if book %}display: none;{% endif %}">
+                            <i class="fa-solid fa-cloud-arrow-up fs-2 text-white-50 mb-2"></i>
+                            <p class="small mb-0">Select or drop cover illustration</p>
+                        </div>
+                    </div>
+                    <input 
+                        type="file" 
+                        name="cover_image" 
+                        class="form-control form-control-sm admin-image-input" 
+                        accept="image/png, image/jpeg, image/webp" 
+                        data-preview-target="preview_book_cover">
+                    <div class="form-text small">Recommended: Landscape or storybook aspect ratio (e.g. 1024x682 or 800x600). PNG/JPG/WebP.</div>
+                </div>
+
+                <!-- Book Title -->
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Book Title <span class="text-danger">*</span></label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. The Enchanted Starlight" value="{{ book.title if book else '' }}" required>
+                </div>
+
+                <!-- Category -->
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Category</label>
+                    <select name="category_id" class="form-select">
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if book and (book.category_id == cat.id or book.category == cat.name) %}selected{% endif %}>
+                                {{ cat.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Author -->
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Author</label>
+                    <input type="text" name="author" class="form-control" placeholder="Once Upon a Page" value="{{ book.author if book else 'Once Upon a Page' }}">
+                </div>
+
+                <!-- Target Age Group & Duration -->
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Age Group</label>
+                        <input type="text" name="target_age" class="form-control form-control-sm" placeholder="3-7 years" value="{{ book.target_age if book else '3-7 years' }}">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Duration</label>
+                        <input type="text" name="duration" class="form-control form-control-sm" placeholder="5 mins" value="{{ book.duration if book else '5 mins' }}">
+                    </div>
+                </div>
+
+                <!-- Synopsis / Description -->
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Short Synopsis / Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="A cozy bedtime tale of...">{{ book.description if book else '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- 2. Story Spread Editor (Left Page & Right Page per Spread)       -->
+        <!-- =============================================================== -->
+        <div class="col-12 col-lg-8">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <div>
+                        <h4 class="admin-card-title">📖 Illustrated Story Spreads</h4>
+                        <p class="text-muted small mb-0">Each spread creates two open facing pages in the digital book reader.</p>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" id="addSpreadBtn">
+                        <i class="fa-solid fa-plus me-1"></i> Add Story Spread
+                    </button>
+                </div>
+
+                <div id="storybookSpreadsContainer">
+                    {% if spreads %}
+                        {% for sp in spreads %}
+                        {% set sp_idx = sp.spread_number or loop.index %}
+                        {% set left_img = sp.illustration or sp.image_url %}
+                        <div class="spread-card shadow-sm" id="spread_{{ sp_idx }}" data-spread-index="{{ sp_idx }}">
+                            <div class="spread-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-pastel-lavender text-lavender-deep fw-bold px-2 py-1">Spread {{ sp_idx }}</span>
+                                    <span class="spread-page-numbers text-muted small">(Pages {{ (sp_idx * 2) - 1 }} & {{ sp_idx * 2 }})</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary btn-move-up" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary btn-move-down" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-delete-spread" title="Delete Spread"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- Left Page (Illustration & Title) -->
+                                <div class="col-md-6 border-end">
+                                    <div class="p-2">
+                                        <h6 class="fw-bold text-lavender-deep mb-2">Left Page (Illustration & Scene)</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Page Illustration</label>
+                                            <div class="page-preview-box mb-2">
+                                                <img 
+                                                    src="{% if left_img %}{{ url_for('static', filename=left_img) }}{% endif %}" 
+                                                    class="page-preview-image" 
+                                                    id="preview_left_sp_{{ sp_idx }}" 
+                                                    style="{% if left_img %}display: block;{% else %}display: none;{% endif %}">
+                                                <div class="upload-placeholder text-center p-3" style="{% if left_img %}display: none;{% endif %}">
+                                                    <i class="fa-solid fa-cloud-arrow-up fs-2 text-muted mb-2"></i>
+                                                    <p class="small text-muted mb-0">Choose image or drag here</p>
+                                                </div>
+                                            </div>
+                                            <!-- Hidden field to preserve existing image path if not replaced -->
+                                            <input type="hidden" name="existing_illustration_{{ sp_idx }}" value="{{ left_img or '' }}">
+                                            <input type="file" name="spread_illustration_{{ sp_idx }}" class="form-control form-control-sm admin-image-input" accept="image/*" data-preview-target="preview_left_sp_{{ sp_idx }}">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Chapter / Scene Title</label>
+                                            <input type="text" name="spread_title_{{ sp_idx }}" class="form-control form-control-sm" placeholder="e.g. Meeting New Friends" value="{{ sp.title or '' }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Page (Story Prose) -->
+                                <div class="col-md-6">
+                                    <div class="p-2">
+                                        <h6 class="fw-bold text-lavender-deep mb-2">Right Page (Story Prose)</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Story Text</label>
+                                            <textarea name="spread_text_{{ sp_idx }}" class="form-control" rows="4" placeholder="Enter bedtime story text for this spread...">{{ sp.text or '' }}</textarea>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Character Dialogue or Moral Note (Optional)</label>
+                                            <input type="text" name="spread_dialogue_{{ sp_idx }}" class="form-control form-control-sm" placeholder="e.g. 'Look at that beautiful star!' whispered Lily." value="{{ sp.dialogue or sp.final_message or '' }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Default Initial Spread 1 for New Book -->
+                        <div class="spread-card shadow-sm" id="spread_1" data-spread-index="1">
+                            <div class="spread-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-pastel-lavender text-lavender-deep fw-bold px-2 py-1">Spread 1</span>
+                                    <span class="spread-page-numbers text-muted small">(Pages 1 & 2)</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary btn-move-up" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary btn-move-down" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-delete-spread" title="Delete Spread"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- Left Page -->
+                                <div class="col-md-6 border-end">
+                                    <div class="p-2">
+                                        <h6 class="fw-bold text-lavender-deep mb-2">Left Page (Illustration & Details)</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Page Illustration</label>
+                                            <div class="page-preview-box mb-2">
+                                                <img src="" class="page-preview-image" id="preview_left_sp_1" style="display: none;">
+                                                <div class="upload-placeholder text-center p-3">
+                                                    <i class="fa-solid fa-cloud-arrow-up fs-2 text-muted mb-2"></i>
+                                                    <p class="small text-muted mb-0">Choose image or drag here</p>
+                                                </div>
+                                            </div>
+                                            <input type="file" name="spread_illustration_1" class="form-control form-control-sm admin-image-input" accept="image/*" data-preview-target="preview_left_sp_1">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Chapter / Scene Title</label>
+                                            <input type="text" name="spread_title_1" class="form-control form-control-sm" placeholder="e.g. Chapter 1: The Adventure Begins">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Page -->
+                                <div class="col-md-6">
+                                    <div class="p-2">
+                                        <h6 class="fw-bold text-lavender-deep mb-2">Right Page (Story Prose)</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Story Text</label>
+                                            <textarea name="spread_text_1" class="form-control" rows="4" placeholder="Once upon a time, in a cozy realm..."></textarea>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Character Dialogue or Moral Note (Optional)</label>
+                                            <input type="text" name="spread_dialogue_1" class="form-control form-control-sm" placeholder="e.g. 'Every page holds a little magic.'">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Bottom Add Spread Prompt -->
+                <div class="text-center py-3 border-top mt-3">
+                    <button type="button" class="btn btn-outline-primary rounded-pill px-4" onclick="document.getElementById('addSpreadBtn').click()">
+                        <i class="fa-solid fa-plus me-1"></i> Add Another Story Spread
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</form>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Reading Analytics & Insights{% endblock %}
+{% block page_title %}Reading Analytics & Insights{% endblock %}
+
+{% block content %}
+<!-- Metric Cards Row -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrapper stat-icon-purple">
+                <i class="fa-solid fa-book-open-reader"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ analytics.total_books_opened }}</div>
+                <div class="stat-label">Total Books Opened</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrapper stat-icon-blue">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ analytics.total_sessions }}</div>
+                <div class="stat-label">Total Reading Sessions</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrapper stat-icon-green">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ analytics.active_readers }}</div>
+                <div class="stat-label">Active Readers</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrapper stat-icon-amber">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ analytics.total_favorites }}</div>
+                <div class="stat-label">Total Favourites</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Most-Read Books Bar Chart -->
+    <div class="col-12 col-lg-7">
+        <div class="admin-card h-100 mb-0">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">📊 Top Read Storybooks</h3>
+                <span class="badge bg-light text-muted border">Distinct Readers per Tale</span>
+            </div>
+            <div style="height: 280px;">
+                <canvas id="topReadChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Most Favorited Books Chart -->
+    <div class="col-12 col-lg-5">
+        <div class="admin-card h-100 mb-0">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">💖 Top Favorited Stories</h3>
+            </div>
+            <div style="height: 280px; position: relative;">
+                <canvas id="topFavChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Tables Row: Recently Read Sessions & Top Performer Details -->
+<div class="row g-4">
+    <!-- Recently Read Sessions Chronicle -->
+    <div class="col-12 col-lg-7">
+        <div class="admin-card h-100 mb-0">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">🕯️ Recent Reading Sessions</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Reader</th>
+                            <th>Storybook</th>
+                            <th>Last Page</th>
+                            <th>Last Opened</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in recent_sessions %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="admin-avatar" style="width: 28px; height: 28px; font-size: 0.78rem;">
+                                        {{ s.user_name[:1].upper() if s.user_name else 'R' }}
+                                    </div>
+                                    <span class="fw-bold">{{ s.user_name }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-lavender-deep">{{ s.book_title }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    Page {{ s.last_read_page }} of {{ s.total_pages }}
+                                </span>
+                            </td>
+                            <td class="small text-muted">{{ s.last_opened_formatted }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center py-3 text-muted">No reading sessions recorded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Most Favourited Books Detailed List -->
+    <div class="col-12 col-lg-5">
+        <div class="admin-card h-100 mb-0">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">✨ Popular Storybooks</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Tale</th>
+                            <th>Readers</th>
+                            <th>Favorites</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in popular_books %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="{{ url_for('static', filename=b.cover) }}" alt="{{ b.title }}" style="width: 28px; height: 38px; object-fit: contain; background: #121026; border-radius: 4px;">
+                                    <div>
+                                        <div class="fw-bold small">{{ b.title }}</div>
+                                        <span class="badge bg-pastel-lavender text-lavender-deep" style="font-size: 0.7rem;">{{ b.category }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><strong>{{ b.reader_count }}</strong></td>
+                            <td><strong class="text-danger"><i class="fa-solid fa-heart me-1"></i>{{ b.fav_count }}</strong></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center py-3 text-muted">No reading history yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Top Read Books Horizontal Bar Chart
+    const topReadTitles = {{ chart_top_read_titles|tojson }};
+    const topReadCounts = {{ chart_top_read_counts|tojson }};
+    const ctxTopRead = document.getElementById('topReadChart');
+    if (ctxTopRead && topReadTitles.length > 0) {
+        new Chart(ctxTopRead, {
+            type: 'bar',
+            data: {
+                labels: topReadTitles,
+                datasets: [{
+                    label: 'Readers',
+                    data: topReadCounts,
+                    backgroundColor: '#7C4DFF',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+    }
+
+    // Top Favorites Doughnut Chart
+    const favTitles = {{ chart_fav_titles|tojson }};
+    const favCounts = {{ chart_fav_counts|tojson }};
+    const ctxFav = document.getElementById('topFavChart');
+    if (ctxFav && favTitles.length > 0) {
+        new Chart(ctxFav, {
+            type: 'doughnut',
+            data: {
+                labels: favTitles,
+                datasets: [{
+                    data: favCounts,
+                    backgroundColor: ['#E040FB', '#FF4081', '#7C4DFF', '#00E676', '#FFD600'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,4333 @@
+/* ==============================================================================
+   Once Upon a Page - Magical Storybook Styling
+   Palette: Soft Pastels (Cream, Lavender, Blush Pink, Light Beige & Antique Gold)
+   ============================================================================== */
+
+:root {
+    /* Primary Pastel Palette */
+    --color-cream: #FFFDF9;
+    --color-cream-soft: #FAF6F0;
+    --color-beige: #F5EFE6;
+    --color-beige-dark: #E8DCCF;
+    
+    --color-lavender-light: #F3EEF9;
+    --color-lavender-soft: #E8E0F5;
+    --color-lavender-mid: #B4A0D6;
+    --color-lavender-deep: #6A5688;
+    
+    --color-blush-light: #FDF2F5;
+    --color-blush-soft: #FADCE5;
+    --color-blush-mid: #E598AF;
+    --color-blush-deep: #B85374;
+    
+    --color-gold-light: #F7E7B4;
+    --color-gold-mid: #D4A853;
+    --color-gold-dark: #A0782C;
+    
+    /* Text & Ink Colors */
+    --color-ink-dark: #2B2236;
+    --color-ink-muted: #5C4F6E;
+    --color-ink-light: #8E7F9E;
+    
+    /* Borders & Glows */
+    --border-storybook: rgba(212, 168, 83, 0.35);
+    --border-pastel: rgba(180, 160, 214, 0.4);
+    --shadow-storybook: 0 20px 50px rgba(106, 86, 136, 0.14), 0 8px 20px rgba(184, 83, 116, 0.08);
+    --shadow-storybook-hover: 0 24px 60px rgba(106, 86, 136, 0.2), 0 12px 24px rgba(184, 83, 116, 0.12);
+    
+    /* Theme-specific tokens */
+    --text-primary: #2B2236;
+    --text-secondary: #5C4F6E;
+    --text-muted: #8E7F9E;
+    --bg-card: #FFFFFF;
+    --bg-surface: #FAF7FD;
+    
+    /* Typography */
+    --font-heading: 'Cinzel Decorative', 'Playfair Display', Georgia, serif;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-body: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ==============================================================================
+   Base Document & Background
+   ============================================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body.storybook-body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    color: var(--color-ink-dark);
+    background-color: var(--color-cream-soft);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(243, 238, 249, 0.8) 0%, transparent 40%),
+        radial-gradient(circle at 90% 15%, rgba(250, 220, 229, 0.7) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(245, 239, 230, 0.85) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(232, 224, 245, 0.6) 0%, transparent 40%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ==============================================================================
+   Magical Celestial Floating Elements
+   ============================================================================== */
+
+.magical-sky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.celestial {
+    position: absolute;
+    opacity: 0.65;
+    user-select: none;
+    filter: drop-shadow(0 2px 6px rgba(180, 160, 214, 0.4));
+}
+
+.star {
+    color: var(--color-gold-mid);
+    font-size: 1.1rem;
+    animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+.star-1 { top: 12%; left: 8%; animation-delay: 0s; font-size: 1.4rem; }
+.star-2 { top: 22%; right: 10%; animation-delay: 1.5s; font-size: 1.1rem; }
+.star-3 { bottom: 25%; left: 12%; animation-delay: 0.8s; font-size: 1.3rem; }
+.star-4 { bottom: 15%; right: 14%; animation-delay: 2.2s; font-size: 1.2rem; }
+.star-5 { top: 45%; left: 4%; animation-delay: 1.1s; font-size: 0.9rem; }
+.star-6 { top: 60%; right: 6%; animation-delay: 2.7s; font-size: 1rem; }
+
+.moon {
+    top: 6%;
+    right: 5%;
+    font-size: 2.4rem;
+    animation: gentleFloat 6s ease-in-out infinite alternate;
+    filter: drop-shadow(0 4px 12px rgba(247, 231, 180, 0.6));
+}
+
+.tiny-book {
+    font-size: 1.6rem;
+    animation: gentleFloat 7s ease-in-out infinite alternate;
+}
+
+.book-1 { top: 18%; left: 15%; animation-delay: 1s; }
+.book-2 { bottom: 20%; right: 18%; animation-delay: 3s; }
+
+.sparkle {
+    font-size: 1.2rem;
+    animation: sparkleSpin 5s ease-in-out infinite;
+}
+
+.sparkle-1 { top: 32%; right: 12%; animation-delay: 0.5s; }
+.sparkle-2 { bottom: 35%; left: 7%; animation-delay: 1.8s; }
+.sparkle-3 { top: 8%; left: 22%; animation-delay: 2.5s; }
+
+/* Animations */
+@keyframes twinkle {
+    0% { transform: scale(0.85); opacity: 0.35; }
+    50% { transform: scale(1.15); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(212, 168, 83, 0.8)); }
+    100% { transform: scale(0.9); opacity: 0.4; }
+}
+
+@keyframes gentleFloat {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+    100% { transform: translateY(3px) rotate(-1deg); }
+}
+
+@keyframes sparkleSpin {
+    0% { transform: scale(0.8) rotate(0deg); opacity: 0.3; }
+    50% { transform: scale(1.1) rotate(90deg); opacity: 0.9; }
+    100% { transform: scale(0.8) rotate(180deg); opacity: 0.3; }
+}
+
+/* ==============================================================================
+   Layout & Container
+   ============================================================================== */
+
+.page-container {
+    position: relative;
+    z-index: 10;
+}
+
+.storybook-wrapper {
+    width: 100%;
+    max-width: 480px;
+}
+
+.storybook-wrapper-wide {
+    width: 100%;
+    max-width: 1060px;
+}
+
+/* ==============================================================================
+   The Magical Storybook Card
+   ============================================================================== */
+
+.storybook-card {
+    position: relative;
+    background: var(--color-cream);
+    background-image: 
+        radial-gradient(circle at 100% 0%, rgba(243, 238, 249, 0.5) 0%, transparent 50%),
+        radial-gradient(circle at 0% 100%, rgba(250, 220, 229, 0.45) 0%, transparent 50%),
+        linear-gradient(to bottom, #FFFFFF 0%, #FFFDF9 100%);
+    border: 2px solid var(--border-storybook);
+    border-radius: 28px;
+    padding: 2.8rem 2.2rem 2.2rem 2.2rem;
+    box-shadow: var(--shadow-storybook);
+    backdrop-filter: blur(10px);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Ornate Inner Book Frame (Delicate double border) */
+.storybook-card::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px dashed rgba(180, 160, 214, 0.45);
+    border-radius: 20px;
+    pointer-events: none;
+}
+
+.storybook-card:hover {
+    box-shadow: var(--shadow-storybook-hover);
+}
+
+/* Bookmark Ribbon hanging at top */
+.bookmark-ribbon {
+    position: absolute;
+    top: -4px;
+    right: 42px;
+    width: 32px;
+    height: 48px;
+    background: linear-gradient(180deg, #D47A94 0%, #B85374 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    box-shadow: 0 4px 8px rgba(184, 83, 116, 0.3);
+    display: flex;
+    justify-content: center;
+    padding-top: 6px;
+    z-index: 12;
+    transition: transform 0.25s ease;
+}
+
+.bookmark-ribbon:hover {
+    transform: translateY(3px);
+}
+
+.ribbon-star {
+    color: var(--color-gold-light);
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+/* ==============================================================================
+   Storybook Header & Typography
+   ============================================================================== */
+
+.storybook-header {
+    position: relative;
+    z-index: 2;
+}
+
+.header-emblem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.emblem-book {
+    font-size: 2.4rem;
+    filter: drop-shadow(0 4px 10px rgba(106, 86, 136, 0.25));
+    transition: transform 0.3s ease;
+}
+
+.storybook-card:hover .emblem-book {
+    transform: scale(1.08) rotate(-3deg);
+}
+
+.emblem-sparkle {
+    font-size: 1.1rem;
+    animation: twinkle 3s infinite alternate;
+}
+
+.left-sparkle { animation-delay: 0.2s; }
+.right-sparkle { animation-delay: 1.2s; }
+
+.storybook-title {
+    font-family: var(--font-heading);
+    font-size: 1.95rem;
+    font-weight: 700;
+    color: var(--color-ink-dark);
+    margin: 0.4rem 0 0.2rem;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--color-ink-dark) 40%, var(--color-lavender-deep) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.storybook-tagline {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.98rem;
+    color: var(--color-blush-deep);
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.3px;
+}
+
+/* Vintage Divider */
+.vintage-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin: 0.4rem auto 0.2rem;
+    max-width: 260px;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-storybook), transparent);
+}
+
+.divider-ornament {
+    font-size: 0.85rem;
+    color: var(--color-gold-mid);
+    letter-spacing: 2px;
+}
+
+/* ==============================================================================
+   Form Elements & Inputs
+   ============================================================================== */
+
+.storybook-form {
+    position: relative;
+    z-index: 2;
+}
+
+.storybook-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.3px;
+    display: block;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--color-lavender-mid);
+    font-size: 0.95rem;
+    pointer-events: none;
+    transition: color 0.25s ease;
+    z-index: 4;
+}
+
+.storybook-input {
+    width: 100%;
+    height: 50px;
+    padding: 0.65rem 1rem 0.65rem 2.75rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-ink-dark);
+    background-color: #FAF8FD;
+    border: 1.5px solid #E4D9EB;
+    border-radius: 16px;
+    transition: all 0.25s ease;
+}
+
+.storybook-input.with-toggle {
+    padding-right: 3rem;
+}
+
+.storybook-input::placeholder {
+    color: #A99EBA;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.storybook-input:focus {
+    background-color: #FFFFFF;
+    border-color: var(--color-lavender-mid);
+    box-shadow: 0 0 0 4px rgba(180, 160, 214, 0.22);
+    outline: none;
+}
+
+.storybook-input:focus + .input-icon,
+.input-wrapper:focus-within .input-icon {
+    color: var(--color-blush-deep);
+}
+
+/* Password Visibility Toggle Button */
+.btn-toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--color-ink-light);
+    font-size: 1rem;
+    padding: 0.4rem 0.5rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 5;
+}
+
+.btn-toggle-password:hover {
+    color: var(--color-lavender-deep);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.btn-toggle-password:focus {
+    outline: none;
+}
+
+/* Form Helper Hints */
+.form-hint {
+    color: var(--color-ink-light);
+    font-size: 0.8rem;
+    padding-left: 0.4rem;
+}
+
+/* Dynamic Password Match Feedback */
+.password-match-indicator {
+    padding-left: 0.4rem;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.match-success {
+    color: #2E7D32;
+}
+
+.match-danger {
+    color: var(--color-blush-deep);
+}
+
+/* ==============================================================================
+   Custom Checkbox & Links
+   ============================================================================== */
+
+.form-options {
+    font-size: 0.88rem;
+}
+
+.custom-checkbox .form-check-input {
+    width: 1.15rem;
+    height: 1.15rem;
+    background-color: #FAF8FD;
+    border: 1.5px solid var(--border-pastel);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.custom-checkbox .form-check-input:checked {
+    background-color: var(--color-blush-deep);
+    border-color: var(--color-blush-deep);
+    box-shadow: 0 0 0 3px rgba(184, 83, 116, 0.2);
+}
+
+.custom-checkbox .form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(180, 160, 214, 0.25);
+    border-color: var(--color-lavender-mid);
+}
+
+.storybook-check-label {
+    color: var(--color-ink-muted);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+}
+
+.storybook-link {
+    color: var(--color-lavender-deep);
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.storybook-link:hover {
+    color: var(--color-blush-deep);
+    text-decoration: underline;
+}
+
+.border-pastel {
+    border-color: rgba(180, 160, 214, 0.3) !important;
+}
+
+.switch-auth-text {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+}
+
+/* ==============================================================================
+   Storybook Magical Buttons
+   ============================================================================== */
+
+.btn-storybook-primary {
+    position: relative;
+    overflow: hidden;
+    height: 52px;
+    background: linear-gradient(135deg, #7A629B 0%, #A4638A 50%, #C27493 100%);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 30px;
+    color: #FFFFFF;
+    font-family: var(--font-body);
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 8px 20px rgba(122, 98, 155, 0.32), 0 3px 6px rgba(194, 116, 147, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.35s ease;
+    cursor: pointer;
+}
+
+.btn-storybook-primary:hover {
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(122, 98, 155, 0.4), 0 4px 10px rgba(194, 116, 147, 0.3);
+    background: linear-gradient(135deg, #876DA9 0%, #B26F98 50%, #CD819F 100%);
+}
+
+.btn-storybook-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 12px rgba(122, 98, 155, 0.25);
+}
+
+/* Button Shimmer Light Animation */
+.btn-shimmer {
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    transition: left 0.75s ease-in-out;
+    pointer-events: none;
+}
+
+.btn-storybook-primary:hover .btn-shimmer {
+    left: 130%;
+}
+
+.btn-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Secondary Button */
+.btn-storybook-secondary {
+    background: #FAF7FC;
+    border: 1.5px solid var(--border-pastel);
+    border-radius: 30px;
+    color: var(--color-ink-muted);
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.btn-storybook-secondary:hover {
+    background: var(--color-lavender-soft);
+    color: var(--color-lavender-deep);
+    border-color: var(--color-lavender-mid);
+    transform: translateY(-1px);
+}
+
+/* ==============================================================================
+   Flash Alerts
+   ============================================================================== */
+
+.storybook-alert {
+    border-radius: 18px;
+    padding: 0.85rem 1.2rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    position: relative;
+    border: 1.5px solid transparent;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-success {
+    background-color: #F1F9F3;
+    border-color: #BEE5D3;
+    color: #22593E;
+}
+
+.alert-danger {
+    background-color: #FFF2F4;
+    border-color: #F8CAD4;
+    color: #8C253B;
+}
+
+.alert-warning {
+    background-color: #FFFDF0;
+    border-color: #F4E7B4;
+    color: #7A5B0B;
+}
+
+.alert-info {
+    background-color: #F4F1FA;
+    border-color: #DDD5EB;
+    color: #4A3E62;
+}
+
+.alert-icon {
+    font-size: 1.1rem;
+}
+
+.storybook-alert .btn-close {
+    padding: 0.9rem;
+    opacity: 0.6;
+}
+
+/* ==============================================================================
+   Modal Styling (Forgot Password)
+   ============================================================================== */
+
+.storybook-modal-card {
+    background: var(--color-cream);
+    border: 2px solid var(--border-storybook);
+    border-radius: 24px;
+    box-shadow: var(--shadow-storybook-hover);
+    padding: 1.2rem;
+}
+
+.storybook-title-sm {
+    font-family: var(--font-heading);
+    color: var(--color-ink-dark);
+    font-size: 1.25rem;
+}
+
+.modal-book-icon {
+    font-size: 2.8rem;
+    filter: drop-shadow(0 4px 10px rgba(106, 86, 136, 0.2));
+}
+
+.storybook-modal-text {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    color: var(--color-ink-muted);
+}
+
+/* ==============================================================================
+   Welcome / Placeholder Page Styling
+   ============================================================================== */
+
+.storybook-welcome-card {
+    max-width: 580px;
+    margin: 0 auto;
+}
+
+.large-icon {
+    font-size: 3.2rem !important;
+}
+
+.user-welcome-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-lavender-light);
+    border: 1px solid var(--border-pastel);
+    border-radius: 30px;
+    padding: 0.35rem 1.1rem;
+    font-size: 0.95rem;
+    color: var(--color-lavender-deep);
+}
+
+.user-highlight {
+    color: var(--color-blush-deep);
+}
+
+.placeholder-announcement {
+    background: linear-gradient(135deg, #FAF7FC 0%, #FDF4F7 100%);
+    border: 1.5px dashed var(--border-storybook);
+}
+
+.magical-book-stack {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 2.2rem;
+}
+
+.book-icon-1 { animation: gentleFloat 4s ease-in-out infinite alternate; }
+.book-icon-2 { animation: twinkle 3s ease-in-out infinite alternate; font-size: 1.4rem; color: var(--color-gold-mid); }
+.book-icon-3 { animation: gentleFloat 5s ease-in-out infinite alternate-reverse; }
+
+.placeholder-heading {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--color-ink-dark);
+    line-height: 1.4;
+}
+
+.placeholder-description {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.account-summary-pill {
+    background-color: #FAF8FD;
+    border: 1px solid #E8DFEE;
+    border-radius: 20px;
+}
+
+/* ==============================================================================
+   Responsive Adjustments
+   ============================================================================== */
+
+@media (max-width: 576px) {
+    .storybook-card {
+        padding: 2.2rem 1.4rem 1.8rem 1.4rem;
+        border-radius: 22px;
+    }
+
+    .storybook-title {
+        font-size: 1.65rem;
+    }
+
+    .storybook-tagline {
+        font-size: 0.88rem;
+    }
+
+    .bookmark-ribbon {
+        right: 24px;
+        width: 28px;
+        height: 40px;
+    }
+
+    .placeholder-heading {
+        font-size: 1.15rem;
+    }
+}
+
+
+/* ==============================================================================
+   PAGE 1: WELCOME / LANDING PAGE STYLING (Reference Image 1 Inspiration)
+   Magical Bedtime Story Atmosphere: Little Girl, Bunny, Teddy, Fairy Lights
+   ============================================================================== */
+
+.welcome-landing-wrapper {
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+.welcome-top-bar {
+    background: rgba(255, 253, 249, 0.7);
+    border: 1px solid var(--border-pastel);
+    border-radius: 40px;
+    backdrop-filter: blur(8px);
+    padding: 0.6rem 1.4rem;
+}
+
+.brand-book-icon {
+    font-size: 1.4rem;
+}
+
+.brand-name {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    color: var(--color-ink-dark);
+}
+
+.user-greeting-pill {
+    background: var(--color-lavender-soft);
+    border: 1px solid var(--border-pastel);
+    color: var(--color-lavender-deep);
+}
+
+.user-name-highlight {
+    color: var(--color-blush-deep);
+}
+
+.btn-quiet-logout {
+    color: var(--color-ink-light);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.btn-quiet-logout:hover {
+    color: var(--color-blush-deep);
+    background: var(--color-blush-soft);
+}
+
+/* The Grand Bedtime Showcase Card */
+.welcome-showcase-card {
+    position: relative;
+    background: var(--color-cream);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(243, 238, 249, 0.85) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(250, 220, 229, 0.75) 0%, transparent 50%),
+        linear-gradient(to bottom, #FFFFFF 0%, #FFFDF9 100%);
+    border: 2px solid var(--border-storybook);
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(91, 74, 120, 0.16), 0 8px 24px rgba(184, 83, 116, 0.1);
+}
+
+/* Fairy Lights Garland Strung at Card Top */
+.fairy-lights-garland {
+    position: absolute;
+    top: 6px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.fairy-bulb {
+    font-size: 0.95rem;
+    filter: drop-shadow(0 0 6px rgba(255, 230, 100, 0.9));
+    animation: bulbFlicker 3s infinite alternate;
+}
+
+.bulb-1 { animation-delay: 0.1s; }
+.bulb-2 { animation-delay: 0.8s; }
+.bulb-3 { animation-delay: 1.4s; }
+.bulb-4 { animation-delay: 2.1s; }
+.bulb-5 { animation-delay: 0.5s; }
+.bulb-6 { animation-delay: 1.7s; }
+.bulb-7 { animation-delay: 1.1s; }
+.bulb-8 { animation-delay: 2.5s; }
+
+@keyframes bulbFlicker {
+    0% { opacity: 0.7; transform: scale(0.9); filter: drop-shadow(0 0 3px rgba(255, 220, 100, 0.5)); }
+    50% { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 9px rgba(255, 240, 140, 1)); }
+    100% { opacity: 0.8; transform: scale(0.95); filter: drop-shadow(0 0 4px rgba(255, 220, 100, 0.6)); }
+}
+
+/* Bedtime Illustration Frame */
+.illustration-frame-container {
+    position: relative;
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+.bedtime-flashlight-glow {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    width: 280px;
+    height: 280px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 245, 180, 0.45) 0%, rgba(255, 220, 140, 0.2) 40%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(20px);
+    pointer-events: none;
+    z-index: 1;
+    animation: gentlePulse 4s ease-in-out infinite alternate;
+}
+
+.fairy-glow-aura {
+    position: absolute;
+    inset: -15px;
+    background: radial-gradient(circle, rgba(180, 160, 225, 0.35) 0%, transparent 65%);
+    border-radius: 36px;
+    filter: blur(15px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes gentlePulse {
+    0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+}
+
+.illustration-art-frame {
+    position: relative;
+    z-index: 2;
+    border-radius: 26px;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 16px 40px rgba(90, 60, 120, 0.22);
+}
+
+.bedtime-illustration-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.6s ease;
+}
+
+.welcome-showcase-card:hover .bedtime-illustration-img {
+    transform: scale(1.025);
+}
+
+.illustration-shimmer-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%, rgba(100, 60, 120, 0.15) 100%);
+    pointer-events: none;
+}
+
+/* Floating tags around illustration */
+.floating-story-tag {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--border-storybook);
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-ink-dark);
+    box-shadow: 0 6px 16px rgba(100, 75, 125, 0.15);
+    z-index: 4;
+    user-select: none;
+    backdrop-filter: blur(4px);
+    animation: gentleTagFloat 4s ease-in-out infinite alternate;
+}
+
+.tag-bunny { bottom: 12px; left: 10px; animation-delay: 0.2s; }
+.tag-bear { bottom: 12px; right: 10px; animation-delay: 1.5s; }
+.tag-lights { top: 12px; right: 15px; animation-delay: 0.8s; }
+
+@keyframes gentleTagFloat {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-5px); }
+}
+
+/* Welcome Text & Exact Headings */
+.welcome-content-col {
+    position: relative;
+    z-index: 3;
+}
+
+.storybook-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-lavender-soft);
+    border: 1px solid var(--border-pastel);
+    padding: 0.35rem 1rem;
+    border-radius: 30px;
+    color: var(--color-lavender-deep);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.pill-sparkle {
+    color: var(--color-gold-mid);
+}
+
+.welcome-main-heading {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-ink-dark);
+    background: linear-gradient(135deg, var(--color-ink-dark) 40%, var(--color-lavender-deep) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.welcome-main-subtitle {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--color-blush-deep);
+    line-height: 1.5;
+}
+
+.bedtime-story-perks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.perk-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-ink-muted);
+}
+
+.perk-icon {
+    font-size: 1.15rem;
+    filter: drop-shadow(0 2px 4px rgba(180, 160, 214, 0.4));
+}
+
+/* Exact Prominent Button: "Enter the Story World ✨" */
+.btn-enter-storybook-world {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.05rem 2.4rem;
+    background: linear-gradient(135deg, #7A5F9E 0%, #A2658A 50%, #C47596 100%);
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-radius: 50px;
+    color: #FFFFFF !important;
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 1.12rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    box-shadow: 0 12px 30px rgba(122, 95, 158, 0.38), 0 0 20px rgba(220, 180, 250, 0.45);
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.25, 1, 0.35, 1);
+    cursor: pointer;
+}
+
+.btn-enter-storybook-world:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 18px 40px rgba(122, 95, 158, 0.48), 0 0 30px rgba(220, 180, 250, 0.7);
+    background: linear-gradient(135deg, #886CAE 0%, #B06E98 50%, #D27E9F 100%);
+}
+
+.btn-enter-storybook-world:active {
+    transform: translateY(0) scale(0.99);
+}
+
+.btn-glow-aura {
+    position: absolute;
+    inset: -10px;
+    background: radial-gradient(circle, rgba(255, 230, 255, 0.3) 0%, transparent 70%);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.btn-shimmer-pass {
+    position: absolute;
+    top: -50%;
+    left: -70%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.45) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    transition: left 0.75s ease-in-out;
+    pointer-events: none;
+}
+
+.btn-enter-storybook-world:hover .btn-shimmer-pass {
+    left: 140%;
+}
+
+.btn-inner-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+}
+
+.btn-arrow-icon {
+    transition: transform 0.25s ease;
+}
+
+.btn-enter-storybook-world:hover .btn-arrow-icon {
+    transform: translateX(4px);
+}
+
+
+/* ==============================================================================
+   PAGE 2: STORYBOOK DASHBOARD STYLING (Reference Image 2 Inspiration)
+   Top Navbar, Left Sidebar, Panoramic Banner, 3D Book Shelf
+   ============================================================================== */
+
+body.dashboard-body {
+    background-color: #F8F5FB;
+    background-image: 
+        radial-gradient(circle at 5% 5%, rgba(243, 238, 249, 0.9) 0%, transparent 30%),
+        radial-gradient(circle at 95% 10%, rgba(250, 220, 229, 0.8) 0%, transparent 35%),
+        radial-gradient(circle at 50% 90%, rgba(245, 239, 230, 0.7) 0%, transparent 40%);
+    min-height: 100vh;
+    color: var(--color-ink-dark);
+}
+
+/* Top Navigation Bar */
+.dashboard-navbar {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1.5px solid rgba(220, 210, 235, 0.6);
+    height: 68px;
+    z-index: 100;
+}
+
+.brand-open-book-icon {
+    font-size: 1.6rem;
+    filter: drop-shadow(0 2px 4px rgba(120, 90, 160, 0.2));
+}
+
+.brand-text-logo {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--color-ink-dark);
+    letter-spacing: 0.5px;
+}
+
+.nav-center-menu .nav-pill-item {
+    padding: 0.45rem 1.15rem;
+    border-radius: 20px;
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+}
+
+.nav-center-menu .nav-pill-item:hover {
+    color: var(--color-lavender-deep);
+    background: var(--color-lavender-light);
+}
+
+.nav-center-menu .nav-pill-item.active {
+    background: var(--color-lavender-soft);
+    color: var(--color-lavender-deep);
+}
+
+.btn-nav-icon {
+    background: #FAF7FD;
+    border: 1px solid var(--border-pastel);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: var(--color-ink-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    position: relative;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-nav-icon:hover {
+    background: var(--color-lavender-soft);
+    color: var(--color-lavender-deep);
+}
+
+.notification-dot {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: #E54B68;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #E54B68;
+}
+
+.btn-profile-pill {
+    background: #FAF7FD;
+    border: 1.5px solid var(--border-pastel);
+    padding: 0.3rem 0.9rem 0.3rem 0.35rem;
+    border-radius: 30px;
+    color: var(--color-ink-dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-profile-pill:hover {
+    background: var(--color-lavender-soft);
+    border-color: var(--color-lavender-mid);
+}
+
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #A4638A, #7A629B);
+    color: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.88rem;
+    box-shadow: 0 2px 6px rgba(120, 80, 140, 0.25);
+}
+
+.storybook-dropdown {
+    border-radius: 18px;
+    border: 1.5px solid var(--border-storybook);
+    background: var(--color-cream);
+    padding: 0.6rem;
+    min-width: 240px;
+    box-shadow: 0 12px 30px rgba(90, 70, 110, 0.15);
+}
+
+/* Dashboard Sidebar (Matching Reference Image 2) */
+.dashboard-main-container {
+    min-height: calc(100vh - 68px);
+}
+
+.dashboard-sidebar {
+    width: 230px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.7);
+    border-right: 1.5px solid rgba(220, 210, 235, 0.6);
+    backdrop-filter: blur(8px);
+    transition: transform 0.3s ease;
+}
+
+.sidebar-nav .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.65rem 1rem;
+    border-radius: 16px;
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav .sidebar-link .link-icon {
+    font-size: 1.1rem;
+    width: 22px;
+    text-align: center;
+    color: var(--color-lavender-mid);
+    transition: color 0.2s ease;
+}
+
+.sidebar-nav .sidebar-link:hover {
+    background: var(--color-lavender-light);
+    color: var(--color-lavender-deep);
+}
+
+.sidebar-nav .sidebar-link:hover .link-icon {
+    color: var(--color-lavender-deep);
+}
+
+/* Active Sidebar Item (Soft Lavender Rounded Pill from Image 2) */
+.sidebar-nav .sidebar-link.active {
+    background: #EAE3F5;
+    color: #4C3766;
+}
+
+.sidebar-nav .sidebar-link.active .link-icon {
+    color: #4C3766;
+}
+
+.sidebar-floral-corner {
+    opacity: 0.85;
+    padding-top: 0.5rem;
+}
+
+.floral-corner-img {
+    max-height: 140px;
+    object-fit: contain;
+}
+
+/* Panoramic Welcome Banner (Matching Reference Image 2) */
+.dashboard-welcome-banner {
+    background: linear-gradient(135deg, #F3EEF9 0%, #FCEEF3 50%, #FAF0E6 100%);
+    border: 1.5px solid rgba(220, 205, 235, 0.7);
+    border-radius: 26px;
+    min-height: 160px;
+    box-shadow: 0 8px 24px rgba(100, 80, 130, 0.07);
+}
+
+.banner-greeting-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--border-pastel);
+    padding: 0.25rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-lavender-deep);
+}
+
+.banner-user-heading {
+    font-family: var(--font-heading);
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--color-ink-dark);
+}
+
+.banner-user-subtitle {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--color-ink-muted);
+}
+
+.banner-illustration-image {
+    max-height: 155px;
+    object-fit: contain;
+    border-radius: 0 26px 26px 0;
+    mask-image: linear-gradient(to right, transparent 0%, black 18%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 18%);
+}
+
+.banner-star-accent {
+    position: absolute;
+    top: 18px;
+    left: 48%;
+    font-size: 1.2rem;
+    opacity: 0.5;
+    animation: twinkle 3s infinite alternate;
+}
+
+/* Shelf Section Header */
+.shelf-emoji-book {
+    font-size: 1.5rem;
+}
+
+.shelf-title {
+    font-family: var(--font-heading);
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--color-ink-dark);
+}
+
+.shelf-count-badge {
+    background: var(--color-lavender-soft);
+    border: 1px solid var(--border-pastel);
+    color: var(--color-lavender-deep);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.2rem 0.65rem;
+    border-radius: 12px;
+}
+
+.view-all-link {
+    color: var(--color-lavender-deep);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+}
+
+.view-all-link:hover {
+    color: var(--color-blush-deep);
+    text-decoration: underline;
+}
+
+
+/* ==============================================================================
+   VERY IMPORTANT: 3D BOOK DESIGN ENGINE
+   Real physical books standing upright with spine, pages depth, realistic shadows,
+   subtle glow, reflection sheen, and gentle 3D hover tilt.
+   ============================================================================== */
+
+/* The Books Shelf Grid */
+.books-3d-shelf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    column-gap: 2rem;
+    row-gap: 2.8rem;
+    padding: 1.5rem 0.5rem 3rem 0.5rem;
+}
+
+.book-shelf-column {
+    display: flex;
+    justify-content: center;
+}
+
+/* 3D Container & Perspective */
+.book-3d-container {
+    width: 190px;
+}
+
+.book-3d-interactive-anchor {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.book-3d-anchor-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+}
+
+.book-3d-viewport {
+    position: relative;
+    width: 100%;
+    height: 275px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
+    cursor: pointer;
+}
+
+/* The Standing 3D Book Object */
+.book-3d-object {
+    position: relative;
+    width: 175px;
+    height: 250px;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    /* Default realistic angled standing perspective */
+    transform: rotateY(-18deg) rotateX(4deg) translateZ(0);
+    transition: transform 0.45s cubic-bezier(0.25, 1, 0.35, 1);
+    cursor: pointer;
+}
+
+/* 1. The Left Book Spine (Realistic 3D spine on the left side) */
+.book-spine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 26px;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        #2A1D38 0%,
+        #4A375E 35%,
+        #7A629B 50%,
+        #3D2B52 85%,
+        #1E1428 100%
+    );
+    border-radius: 4px 0 0 4px;
+    transform-origin: left center;
+    transform: rotateY(-90deg) translateX(-13px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.4);
+    z-index: 5;
+    overflow: hidden;
+}
+
+.spine-emboss-ribs {
+    position: absolute;
+    top: 25px;
+    bottom: 25px;
+    left: 2px;
+    right: 2px;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 35px,
+        rgba(255, 230, 160, 0.4) 36px,
+        rgba(0, 0, 0, 0.4) 37px
+    );
+    pointer-events: none;
+}
+
+.spine-vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #F8E8C0;
+    letter-spacing: 0.8px;
+    max-height: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.spine-bottom-star {
+    color: #F8E8C0;
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+/* 2. The Front Cover Face */
+.book-cover-front {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 2px 14px 14px 2px;
+    overflow: hidden;
+    background-color: #121026;
+    transform: translateZ(13px);
+    box-shadow: 0 4px 14px rgba(60, 40, 80, 0.25);
+    z-index: 10;
+}
+
+.book-cover-artwork {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    background-color: #121026;
+}
+
+/* Left Crease / Spine Hinge Shadow on Front Cover */
+.book-spine-crease {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 14px;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.35) 0%,
+        rgba(255, 255, 255, 0.25) 25%,
+        rgba(0, 0, 0, 0.2) 60%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 12;
+}
+
+/* Soft Light Reflection / Specular Sheen Effect */
+.book-cover-sheen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        125deg,
+        rgba(255, 255, 255, 0.45) 0%,
+        rgba(255, 255, 255, 0.12) 28%,
+        transparent 55%
+    );
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 13;
+}
+
+/* Subtle Magical Glowing Border Around Every Book */
+.book-glow-border {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px 14px 14px 2px;
+    box-shadow: 
+        inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+        0 0 14px rgba(180, 160, 220, 0.3);
+    pointer-events: none;
+    transition: box-shadow 0.4s ease;
+    z-index: 14;
+}
+
+.book-favorite-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #E54B68;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    z-index: 15;
+}
+
+/* 3. The 3D Page Blocks (Realistic Thickness & Depth) */
+/* Right paper edge */
+.book-pages-right {
+    position: absolute;
+    top: 4px;
+    right: 1px;
+    width: 24px;
+    height: 242px;
+    /* Stacked paper sheets texture */
+    background: repeating-linear-gradient(
+        to right,
+        #FFFDF8 0px,
+        #F5EFE0 1px,
+        #E8DFCC 2px
+    );
+    transform-origin: right center;
+    transform: rotateY(90deg) translateX(12px);
+    box-shadow: inset 0 0 4px rgba(90, 70, 50, 0.25);
+    z-index: 4;
+}
+
+/* Bottom paper edge */
+.book-pages-bottom {
+    position: absolute;
+    left: 4px;
+    bottom: 1px;
+    width: 168px;
+    height: 24px;
+    background: repeating-linear-gradient(
+        to bottom,
+        #FFFDF8 0px,
+        #F5EFE0 1px,
+        #E8DFCC 2px
+    );
+    transform-origin: center bottom;
+    transform: rotateX(-90deg) translateY(12px);
+    box-shadow: inset 0 0 4px rgba(90, 70, 50, 0.25);
+    z-index: 4;
+}
+
+/* Back hardcover */
+.book-cover-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #322544;
+    border-radius: 4px 12px 12px 4px;
+    transform: translateZ(-13px);
+    z-index: 1;
+}
+
+/* 4. Soft Shadows Underneath Each Book */
+.book-ground-shadow {
+    position: absolute;
+    bottom: 2px;
+    left: 8px;
+    width: 165px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(50, 35, 70, 0.38) 0%,
+        rgba(50, 35, 70, 0.12) 50%,
+        transparent 75%
+    );
+    transform: translateY(14px) rotateX(75deg);
+    filter: blur(4px);
+    pointer-events: none;
+    transition: all 0.45s ease;
+}
+
+/* 5. Smooth 3D Hover Animation */
+.book-3d-container:hover .book-3d-object {
+    /* Slightly lift and tilt gently in 3D */
+    transform: translateY(-14px) rotateY(-8deg) rotateX(1deg) scale(1.03);
+}
+
+.book-3d-container:hover .book-glow-border {
+    /* Glowing effect becomes more visible */
+    box-shadow: 
+        inset 0 0 0 1px rgba(255, 255, 255, 0.65),
+        0 0 24px rgba(195, 170, 240, 0.65),
+        0 0 12px rgba(245, 215, 150, 0.4);
+}
+
+.book-3d-container:hover .book-ground-shadow {
+    /* Shadow becomes slightly stronger and softer */
+    transform: translateY(22px) rotateX(75deg) scale(1.18);
+    opacity: 0.65;
+    filter: blur(7px);
+}
+
+.book-3d-container:hover .book-cover-sheen {
+    opacity: 0.85;
+}
+
+/* Book Metadata Below */
+.book-meta-content {
+    padding: 0 0.5rem;
+}
+
+.book-category-pill {
+    background: #FAF7FD;
+    border: 1px solid var(--border-pastel);
+    color: var(--color-lavender-deep);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.65rem;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.book-card-title {
+    font-family: var(--font-heading);
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--color-ink-dark);
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+    transition: color 0.2s ease;
+}
+
+.book-3d-container:hover .book-card-title {
+    color: var(--color-blush-deep);
+}
+
+.book-title-link {
+    color: var(--color-ink-dark);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.book-title-link:hover {
+    color: var(--color-lavender-deep);
+    text-decoration: none;
+}
+
+.btn-open-book-pill {
+    display: inline-block;
+    padding: 0.38rem 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 20px;
+    background: #FAF7FD;
+    color: #5C4F6E;
+    border: 1.5px solid rgba(180, 160, 214, 0.5);
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.btn-open-book-pill:hover {
+    background: linear-gradient(135deg, #7E57C2 0%, #9C27B0 100%);
+    color: #FFFFFF;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(126, 87, 194, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 991.98px) {
+    .dashboard-sidebar {
+        position: fixed;
+        top: 68px;
+        left: 0;
+        bottom: 0;
+        z-index: 99;
+        transform: translateX(-100%);
+    }
+
+    .dashboard-sidebar.sidebar-open {
+        transform: translateX(0);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .welcome-main-heading {
+        font-size: 1.75rem;
+    }
+    .welcome-main-subtitle {
+        font-size: 1rem;
+    }
+    .btn-enter-storybook-world {
+        padding: 0.85rem 1.8rem;
+        font-size: 1rem;
+    }
+    .banner-user-heading {
+        font-size: 1.6rem;
+    }
+    .books-3d-shelf-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        column-gap: 1.2rem;
+    }
+    .book-3d-container {
+        width: 160px;
+    }
+    .book-3d-object {
+        width: 150px;
+        height: 215px;
+    }
+    .book-3d-viewport {
+        height: 235px;
+    }
+}
+
+
+/* ==============================================================================
+   PART 1: REDESIGNED FULL-SCREEN WELCOME PAGE (100vw x 100vh)
+   Uncluttered, full-viewport illustration with ONLY specified text & button
+   ============================================================================== */
+
+body.welcome-fullscreen-body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background-color: #261A45;
+    font-family: var(--font-body);
+    color: #FFFFFF;
+}
+
+.welcome-fullscreen-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    overflow: hidden;
+    background: #251842;
+}
+
+.welcome-bg-image-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: brightness(0.92) contrast(1.05);
+    transition: transform 1.2s ease-out;
+}
+
+.welcome-bg-plain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #140E24;
+    z-index: 1;
+}
+
+.welcome-bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.35s ease-in;
+}
+
+.welcome-bg-video.video-ready {
+    opacity: 1;
+}
+
+/* Sound Control on Welcome Page */
+.welcome-sound-control-group {
+    position: relative;
+    z-index: 25;
+}
+
+.welcome-sound-btn {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.35rem 0.95rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: all 0.25s ease;
+}
+
+.welcome-sound-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.welcome-sound-btn.sound-prompt-pulse {
+    animation: soundPromptPulse 1.8s infinite;
+    background: linear-gradient(135deg, rgba(179, 136, 255, 0.45), rgba(224, 64, 251, 0.45));
+    border-color: rgba(224, 64, 251, 0.7);
+    color: #FFFFFF;
+}
+
+@keyframes soundPromptPulse {
+    0% { box-shadow: 0 0 0 0 rgba(224, 64, 251, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(224, 64, 251, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(224, 64, 251, 0); }
+}
+
+.welcome-volume-slider-wrapper {
+    width: 80px;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.35rem 0.6rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(6px);
+}
+
+.welcome-volume-slider {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    accent-color: #B388FF;
+}
+
+.welcome-vignette-overlay {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 50% 50%, rgba(20, 14, 40, 0.25) 0%, rgba(15, 10, 32, 0.7) 75%, rgba(10, 6, 22, 0.88) 100%),
+        linear-gradient(to bottom, rgba(15, 10, 35, 0.65) 0%, transparent 40%, rgba(12, 8, 28, 0.75) 100%);
+    pointer-events: none;
+}
+
+/* Quiet Top Controls */
+.welcome-top-controls {
+    position: relative;
+    z-index: 20;
+    backdrop-filter: blur(4px);
+    background: linear-gradient(to bottom, rgba(15, 10, 30, 0.45) 0%, transparent 100%);
+}
+
+.welcome-quiet-logout {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    transition: all 0.25s ease;
+}
+
+.welcome-quiet-logout:hover {
+    color: #FFFFFF;
+    background: rgba(184, 83, 116, 0.35);
+    border-color: rgba(240, 150, 175, 0.4);
+}
+
+/* Fullscreen Centered Content */
+.welcome-fullscreen-main {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: calc(100vh - 65px);
+    margin-top: -20px;
+}
+
+.welcome-focused-content {
+    max-width: 820px;
+    margin: 0 auto;
+}
+
+.welcome-deco-symbol {
+    font-size: 1.8rem;
+    color: var(--color-gold-light);
+    text-shadow: 0 0 12px rgba(247, 231, 180, 0.8);
+    animation: twinkle 3s ease-in-out infinite alternate;
+}
+
+.welcome-cozy-label {
+    display: inline-block;
+    background: rgba(232, 224, 245, 0.18);
+    border: 1px solid rgba(235, 220, 255, 0.35);
+    backdrop-filter: blur(8px);
+    color: #F8EEFA;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 0.35rem 1.25rem;
+    border-radius: 30px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-fullscreen-heading {
+    font-family: var(--font-heading);
+    font-size: clamp(2.1rem, 4.8vw, 3.6rem);
+    font-weight: 700;
+    color: #FFFDF8;
+    line-height: 1.2;
+    letter-spacing: 0.6px;
+    text-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.75),
+        0 2px 8px rgba(90, 60, 130, 0.6);
+}
+
+.welcome-fullscreen-subtitle {
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    font-style: italic;
+    color: #FCE8F0;
+    line-height: 1.5;
+    max-width: 680px;
+    margin: 0 auto;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.welcome-deco-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.welcome-deco-divider .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 235, 170, 0.6), transparent);
+}
+
+.welcome-deco-divider .divider-ornament {
+    font-size: 0.95rem;
+    color: var(--color-gold-light);
+    letter-spacing: 3px;
+    text-shadow: 0 0 8px rgba(247, 231, 180, 0.6);
+}
+
+/* Prominent Main Button: "Enter the Story World ✨" */
+.btn-enter-story-world {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.15rem 2.8rem;
+    background: linear-gradient(135deg, #7C5F9F 0%, #A3648B 50%, #C47495 100%);
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50px;
+    color: #FFFFFF !important;
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 
+        0 14px 34px rgba(90, 60, 130, 0.45),
+        0 0 25px rgba(230, 190, 255, 0.55);
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.25, 1, 0.35, 1);
+    cursor: pointer;
+}
+
+.btn-enter-story-world:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 
+        0 20px 45px rgba(90, 60, 130, 0.55),
+        0 0 35px rgba(235, 200, 255, 0.85);
+    background: linear-gradient(135deg, #8A6BB0 0%, #B26E97 50%, #D480A2 100%);
+}
+
+.btn-enter-story-world:active {
+    transform: translateY(-1px) scale(1.0);
+}
+
+
+/* ==============================================================================
+   PART 3 & 4: TWINKLE INTERACTIVE STORYBOOK READER (StPageFlip.js)
+   Realistic physical hardcover book, cream paper spreads, page-turning physics
+   ============================================================================== */
+
+body.reader-fullscreen-body {
+    background-color: #171226;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(38, 28, 72, 0.9) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(65, 42, 95, 0.8) 0%, transparent 45%),
+        linear-gradient(to bottom, #100C1C 0%, #1A142B 100%);
+    min-height: 100vh;
+    color: #332644;
+    overflow-x: hidden;
+    font-family: var(--font-body);
+}
+
+.reader-sky-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.reader-celestial {
+    position: absolute;
+    opacity: 0.55;
+    color: var(--color-gold-mid);
+}
+
+/* Reading Top Navigation Bar */
+.reader-nav-header {
+    position: relative;
+    z-index: 50;
+    background: rgba(22, 16, 36, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(180, 160, 220, 0.25);
+    height: 62px;
+}
+
+.btn-reader-nav {
+    color: #EAE3F5;
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 0.4rem 0.95rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+}
+
+.btn-reader-nav:hover {
+    color: #FFFFFF;
+    background: rgba(180, 160, 220, 0.25);
+    border-color: rgba(210, 190, 245, 0.4);
+}
+
+.reader-book-title-badge {
+    color: #FAF4E8;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    letter-spacing: 0.6px;
+}
+
+.reader-title-icon {
+    font-size: 0.95rem;
+    color: var(--color-gold-mid);
+    margin: 0 0.3rem;
+}
+
+.btn-reader-sound {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    color: #EAE3F5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-reader-sound:hover {
+    background: rgba(180, 160, 220, 0.25);
+    color: #FFFFFF;
+}
+
+.reader-page-indicator {
+    background: rgba(232, 224, 245, 0.15);
+    border: 1px solid rgba(235, 220, 255, 0.25);
+    color: #F8EEFA;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Book Reading Stage */
+.reader-stage-container {
+    position: relative;
+    z-index: 10;
+    min-height: calc(100vh - 62px);
+    padding: 1.5rem 1rem 2rem 1rem;
+}
+
+.book-reading-viewport {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* StPageFlip Flip-Book Container */
+.twinkle-flip-book {
+    box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.65),
+        0 8px 24px rgba(25, 15, 45, 0.45);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* Individual Pages in StPageFlip */
+.twinkle-flip-book .page {
+    background-color: #FAF6EE;
+    overflow: hidden;
+    position: relative;
+    contain: layout paint;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+/* 1. Official Front Hardcover */
+.page-cover-front {
+    background-color: #17112E;
+}
+
+.hardcover-texture {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.official-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.hardcover-spine-edge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.5) 0%,
+        rgba(255, 255, 255, 0.2) 30%,
+        rgba(0, 0, 0, 0.25) 70%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 5;
+}
+
+.hardcover-sheen-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        130deg,
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(255, 255, 255, 0.08) 25%,
+        transparent 55%
+    );
+    pointer-events: none;
+    z-index: 6;
+}
+
+.hardcover-gold-rim {
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(255, 225, 140, 0.4);
+    pointer-events: none;
+    z-index: 7;
+}
+
+/* 2. Inside Front Cover & Bookplate */
+.page-inside-front {
+    background: #FDF9F0;
+    border-right: 1px solid rgba(180, 160, 130, 0.3);
+}
+
+.bookplate-frame {
+    background: #FFFDF7;
+    border: 2px dashed rgba(180, 150, 100, 0.4);
+}
+
+.bookplate-star {
+    font-size: 2.2rem;
+    filter: drop-shadow(0 2px 6px rgba(240, 200, 90, 0.5));
+}
+
+.bookplate-title {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    color: var(--color-ink-dark);
+}
+
+/* 3. Inside Story Pages (Cream paper with large illustrations) */
+.page-paper-content {
+    height: 100%;
+    background-color: #FAF6EE;
+    background-image: 
+        radial-gradient(circle at 50% 50%, #FFFDF8 0%, #FAF5EB 100%);
+    box-shadow: inset 0 0 35px rgba(180, 165, 140, 0.18);
+    position: relative;
+}
+
+/* Center gutter shadow along spine fold */
+.twinkle-flip-book .page:nth-child(even)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 25px;
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.12));
+    pointer-events: none;
+}
+
+.twinkle-flip-book .page:nth-child(odd)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 25px;
+    background: linear-gradient(to left, transparent, rgba(0, 0, 0, 0.12));
+    pointer-events: none;
+}
+
+/* Large Story Illustration Frame (65-75% height) */
+.story-illustration-frame {
+    width: 100%;
+    height: 68%;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 2px solid rgba(210, 190, 150, 0.45);
+    box-shadow: 0 6px 18px rgba(90, 70, 50, 0.12);
+}
+
+.story-scene-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: translateZ(0);
+    image-rendering: -webkit-optimize-contrast;
+}
+
+/* Short, Large, Readable Story Sentences */
+.story-text-container {
+    height: 28%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 0.5rem;
+}
+
+.story-sentence {
+    font-family: var(--font-serif);
+    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+    line-height: 1.5;
+    color: #2D203D;
+}
+
+.story-dialogue-sub {
+    font-family: var(--font-serif);
+    font-size: 0.98rem;
+    font-style: italic;
+    color: #5D4D73 !important;
+}
+
+.story-moral-highlight {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #9C6615;
+}
+
+.page-footer {
+    font-size: 0.8rem;
+    color: #A09080;
+}
+
+/* 4. Hardcover Back */
+.page-cover-back {
+    background: linear-gradient(135deg, #24163B 0%, #180F28 100%);
+    border-left: 2px solid rgba(255, 230, 160, 0.3);
+}
+
+.hardcover-back-content {
+    height: 100%;
+}
+
+.back-cover-emblem {
+    font-size: 3rem;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+}
+
+.back-cover-brand {
+    font-family: var(--font-heading);
+    color: #FFFDF8;
+    font-size: 1.5rem;
+}
+
+.back-cover-quote {
+    color: var(--color-gold-light);
+    font-size: 1.05rem;
+}
+
+.back-cover-seal {
+    border: 1px solid var(--border-storybook);
+    padding: 0.4rem 1.2rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    color: #D4A853;
+}
+
+/* Floating Navigation Turn Buttons */
+.reader-floating-nav {
+    position: relative;
+    z-index: 20;
+}
+
+.btn-reader-turn {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+    font-weight: 700;
+    padding: 0.6rem 1.4rem;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    backdrop-filter: blur(8px);
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.btn-reader-turn:hover {
+    background: rgba(180, 160, 220, 0.35);
+    color: #FFFFFF;
+    border-color: rgba(220, 200, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.reader-hint-text {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+@media (max-width: 767.98px) {
+    .reader-stage-container {
+        padding: 0.5rem;
+    }
+    .story-illustration-frame {
+        height: 62%;
+    }
+    .story-sentence {
+        font-size: 0.95rem;
+    }
+}
+
+/* =============================================================================
+   9. PHYSICAL 3D CLOSED BOOK STAGE & FLUID OPENING ANIMATION
+   ============================================================================= */
+
+.reader-experience-wrapper {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    place-items: center;
+    min-height: calc(100vh - 62px);
+    height: calc(100vh - 62px);
+    width: 100%;
+    position: relative;
+    padding: 0.5rem 1rem;
+    perspective: 2200px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+/* State 1: Closed 3D Book Viewport - Perfectly Centered in Available Viewport Area */
+.closed-book-viewport {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    z-index: 10;
+}
+
+.closed-book-viewport.book-closed-fade {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: none;
+}
+
+.closed-book-interactive-anchor {
+    position: relative;
+    cursor: pointer;
+    perspective: 2000px;
+    transform-style: preserve-3d;
+    padding: 0.5rem 0;
+}
+
+/* Physical Closed 3D Book Object - Natural Hardcover Storybook Dimensions */
+.closed-book-3d-object {
+    position: relative;
+    width: 365px;
+    height: 520px;
+    max-width: 82vw;
+    max-height: 60vh;
+    aspect-ratio: 0.70;
+    transform-style: preserve-3d;
+    transform: rotateY(-14deg) rotateX(4deg);
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.6s ease;
+}
+
+.closed-book-interactive-anchor:hover .closed-book-3d-object {
+    transform: translateY(-8px) rotateY(-8deg) rotateX(2deg) scale(1.02);
+}
+
+/* Front Hardcover with Complete Uncropped Artwork */
+.closed-book-front-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px 16px 16px 4px;
+    background-color: #17112e;
+    overflow: hidden;
+    transform: translateZ(16px);
+    transform-origin: left center;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+    z-index: 10;
+    transition: transform 0.65s cubic-bezier(0.35, 0, 0.2, 1), opacity 0.35s ease;
+    backface-visibility: hidden;
+}
+
+.closed-cover-artwork-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 4px 16px 16px 4px;
+}
+
+/* Crease & Spine Hinge Shadow */
+.hardcover-spine-crease {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(255, 255, 255, 0.2) 30%,
+        rgba(0, 0, 0, 0.25) 70%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 12;
+}
+
+/* Left Book Spine (3D side face) */
+.closed-book-spine {
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: 26px;
+    height: 100%;
+    background: linear-gradient(135deg, #1c1533 0%, #100b21 50%, #291f4d 100%);
+    border-radius: 4px 0 0 4px;
+    transform: rotateY(-90deg);
+    transform-origin: right center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    box-shadow: inset -2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 5;
+}
+
+.closed-book-spine .spine-vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    color: #ECC979;
+    font-family: var(--font-heading);
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+}
+
+.closed-book-spine .spine-bottom-star {
+    color: #FFD97D;
+    font-size: 0.9rem;
+}
+
+/* 3D Paper Page Blocks (Right, Bottom, Top) */
+.closed-book-pages-right {
+    position: absolute;
+    top: 4px;
+    right: -14px;
+    width: 26px;
+    height: calc(100% - 8px);
+    background: repeating-linear-gradient(
+        to right,
+        #fbf6ea 0px,
+        #ede3cb 2px,
+        #f6eee0 4px
+    );
+    transform: rotateY(90deg);
+    transform-origin: left center;
+    box-shadow: inset 0 0 4px rgba(120, 100, 70, 0.35);
+}
+
+.closed-book-pages-bottom {
+    position: absolute;
+    bottom: -14px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: 26px;
+    background: repeating-linear-gradient(
+        to bottom,
+        #fbf6ea 0px,
+        #ede3cb 2px,
+        #f6eee0 4px
+    );
+    transform: rotateX(-90deg);
+    transform-origin: center top;
+    box-shadow: inset 0 0 4px rgba(120, 100, 70, 0.35);
+}
+
+.closed-book-pages-top {
+    position: absolute;
+    top: -14px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: 26px;
+    background: repeating-linear-gradient(
+        to bottom,
+        #fbf6ea 0px,
+        #ede3cb 2px,
+        #f6eee0 4px
+    );
+    transform: rotateX(90deg);
+    transform-origin: center bottom;
+    box-shadow: inset 0 0 4px rgba(120, 100, 70, 0.35);
+}
+
+.closed-book-back-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px 16px 16px 4px;
+    background-color: #150f26;
+    transform: translateZ(-16px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.55);
+}
+
+/* Inner First Page Surface (visible when front cover opens) */
+.closed-book-inner-page {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 10px);
+    height: calc(100% - 8px);
+    border-radius: 2px 12px 12px 2px;
+    background: #FAF6EE;
+    background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 0%, rgba(243, 235, 218, 0.9) 100%);
+    box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.15);
+    transform: translateZ(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 8;
+}
+
+.closed-book-inner-page .inner-page-content {
+    text-align: center;
+    color: #6A5688;
+    padding: 1.5rem;
+    font-family: var(--font-serif);
+}
+
+.closed-book-inner-page .inner-page-star {
+    display: block;
+    font-size: 1.5rem;
+    color: #D4A853;
+    margin-bottom: 0.5rem;
+}
+
+.closed-book-inner-page .inner-page-title {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2B2236;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+}
+
+.closed-book-inner-page .inner-page-brand {
+    font-size: 0.82rem;
+    font-style: italic;
+    color: #8E7F9E;
+}
+
+/* Floor Contact Shadow & Magical Golden Aura */
+.closed-book-ground-shadow {
+    position: absolute;
+    bottom: -30px;
+    left: 8%;
+    width: 84%;
+    height: 28px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0) 70%);
+    filter: blur(8px);
+    transform: rotateX(75deg);
+    pointer-events: none;
+    z-index: 1;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+.closed-book-magic-aura {
+    position: absolute;
+    inset: -20px;
+    border-radius: 24px;
+    background: radial-gradient(circle at center, rgba(240, 200, 90, 0.22) 0%, rgba(200, 160, 240, 0.1) 45%, transparent 70%);
+    pointer-events: none;
+    animation: magicAuraPulse 3.5s ease-in-out infinite;
+    z-index: 0;
+    transition: opacity 0.4s ease;
+}
+
+@keyframes magicAuraPulse {
+    0%, 100% {
+        transform: scale(0.96);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.04);
+        opacity: 0.95;
+    }
+}
+
+/* 3D Book Opening Transition Animation */
+.book-opening-animation .closed-book-front-cover {
+    transform: translateZ(16px) rotateY(-155deg);
+    opacity: 0.15;
+}
+
+.book-opening-animation .closed-book-3d-object {
+    transform: rotateY(0deg) rotateX(0deg);
+}
+
+.book-opening-animation .closed-book-ground-shadow {
+    transform: rotateX(75deg) scale(1.05);
+    opacity: 0.25;
+}
+
+.book-opening-animation .closed-book-magic-aura {
+    opacity: 0;
+}
+
+/* Action Button: Positioned neatly below closed book without offsetting vertical center */
+.closed-book-action-container {
+    position: absolute;
+    top: calc(100% + 1.25rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 90vw;
+    z-index: 15;
+    margin-top: 0 !important;
+}
+
+.btn-open-storybook-magic {
+    background: linear-gradient(135deg, #7C4DFF 0%, #B388FF 50%, #E040FB 100%);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 0.85rem 2.2rem;
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(124, 77, 255, 0.4), 0 0 20px rgba(224, 64, 251, 0.3);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.btn-open-storybook-magic:hover {
+    transform: translateY(-3px) scale(1.04);
+    color: #FFFFFF;
+    box-shadow: 0 12px 32px rgba(124, 77, 255, 0.55), 0 0 30px rgba(255, 215, 0, 0.45);
+    border-color: #FFEA79;
+}
+
+.resume-badge-hint {
+    background: rgba(120, 80, 200, 0.25);
+    border: 1px solid rgba(200, 160, 255, 0.3);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* State 2: Open Two-Page Spread Viewport - Seamlessly aligned with closed book */
+.open-book-viewport {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    z-index: 5;
+}
+
+.open-book-viewport.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+}
+
+.btn-reader-close {
+    background: rgba(220, 100, 140, 0.2);
+    border: 1.5px solid rgba(240, 150, 180, 0.4);
+    color: #FFE6EE;
+}
+
+.btn-reader-close:hover {
+    background: rgba(220, 80, 120, 0.4);
+    color: #FFFFFF;
+    border-color: #FFB3C6;
+}
+
+.btn-reader-close-action {
+    background: rgba(255, 120, 150, 0.18) !important;
+    border-color: rgba(255, 170, 190, 0.35) !important;
+    color: #FFE6EE !important;
+}
+
+.btn-reader-close-action:hover {
+    background: rgba(255, 100, 140, 0.4) !important;
+    color: #FFFFFF !important;
+}
+
+/* =============================================================================
+   10. TWO-PAGE SPREAD STYLING (LEFT = ARTWORK, RIGHT = PROSE)
+   ============================================================================= */
+
+.page-illustration .story-illustration-frame {
+    width: 100%;
+    height: 90%;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid rgba(210, 190, 150, 0.4);
+    box-shadow: 0 4px 16px rgba(80, 60, 40, 0.12);
+}
+
+.page-illustration .story-illustration-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.story-spread-tag {
+    font-family: var(--font-heading);
+    color: #9C835A;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.story-chapter-title {
+    font-family: var(--font-heading);
+    color: #2D1D45;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.story-sentence-primary {
+    font-family: var(--font-serif);
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    line-height: 1.7;
+    color: #2C2038;
+}
+
+.story-sentence-secondary {
+    font-family: var(--font-serif);
+    font-size: clamp(0.98rem, 1.3vw, 1.15rem);
+    line-height: 1.65;
+    color: #5A4E6B !important;
+}
+
+.story-quote-italic {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+    line-height: 1.7;
+    color: #4C3766;
+}
+
+.story-dialogue-highlight {
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+    line-height: 1.7;
+    color: #7B341E;
+    font-weight: 600;
+}
+
+.story-moral-card {
+    background: linear-gradient(135deg, #FFF8E7 0%, #FFF1D6 100%);
+    border: 2px dashed #E0B460;
+    box-shadow: 0 4px 12px rgba(220, 160, 60, 0.15);
+}
+
+.moral-heart {
+    font-size: 1.8rem;
+}
+
+.story-moral-highlight {
+    font-family: var(--font-serif);
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #8C590E;
+    line-height: 1.55;
+}
+
+.the-end-ribbon {
+    margin-top: 0.8rem;
+}
+
+.enchanted-seal {
+    font-family: var(--font-heading);
+    background: linear-gradient(135deg, #9C6F1E 0%, #D4A853 100%);
+    color: #FFFFFF;
+    padding: 0.35rem 1.4rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    box-shadow: 0 3px 10px rgba(180, 130, 40, 0.35);
+}
+
+/* =============================================================================
+   11. UNIVERSAL 3D POP-OUT & LIVING STORYBOOK EFFECTS ENGINE
+   ============================================================================= */
+
+/* 3D Perspective Stage for Storybook Illustrations */
+.story-illustration-frame {
+    position: relative;
+    width: 100%;
+    height: 90%;
+    border-radius: 16px;
+    overflow: hidden;
+    perspective: 1200px;
+    transform-style: preserve-3d;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.22),
+        0 2px 8px rgba(0, 0, 0, 0.12),
+        inset 0 0 1px 1px rgba(255, 255, 255, 0.3);
+    background: #120C24;
+    cursor: default;
+    user-select: none;
+}
+
+/* 3D Tilt Viewport Container */
+.popout-scene-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    perspective: 1200px;
+    border-radius: 16px;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Gentle Idle 3D Living Breath when not hovered */
+.story-illustration-frame:not(:hover) .popout-scene-viewport {
+    animation: popoutGentleBreathe 6s ease-in-out infinite alternate;
+}
+
+@keyframes popoutGentleBreathe {
+    0% {
+        transform: rotateX(-0.8deg) rotateY(-1.2deg);
+    }
+    50% {
+        transform: rotateX(0.8deg) rotateY(1.2deg);
+    }
+    100% {
+        transform: rotateX(-0.5deg) rotateY(-0.8deg);
+    }
+}
+
+/* Base Depth Layers */
+.popout-depth-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform-style: preserve-3d;
+}
+
+/* Layer 1: Scenery / Background Plane (Z: 0px) */
+.popout-layer-scenery {
+    z-index: 1;
+    transform: translateZ(0px);
+}
+
+.popout-layer-scenery img.story-scene-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 16px;
+}
+
+.popout-scenery-vignette {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: radial-gradient(circle at center, transparent 65%, rgba(10, 5, 25, 0.28) 100%);
+    pointer-events: none;
+}
+
+/* Layer 2: Atmosphere / Ambient Float Plane (Z: 14px) */
+.popout-layer-atmosphere {
+    z-index: 2;
+    transform: translateZ(14px);
+}
+
+/* Layer 3: Living Characters & Focal Features (Z: 28px) - 3D POP-OUT EFFECT */
+.popout-layer-character {
+    z-index: 3;
+    transform: translateZ(28px);
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.32));
+}
+
+/* Layer 4: Transparent Pop-out Character Overlay (Z: 38px) */
+.popout-layer-overlay {
+    z-index: 4;
+    transform: translateZ(38px);
+}
+
+.popout-overlay-character-img {
+    position: absolute;
+    max-width: 75%;
+    max-height: 85%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
+    animation: characterLivingFloat 4s ease-in-out infinite alternate;
+}
+
+@keyframes characterLivingFloat {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-6px) rotate(1deg); }
+}
+
+/* Layer 5: Paper Edge Rim & Directional Light Sheen (Z: 44px) */
+.popout-layer-sheen {
+    z-index: 5;
+    transform: translateZ(44px);
+    border-radius: 16px;
+    box-shadow: 
+        inset 0 0 0 1.5px rgba(255, 235, 180, 0.35),
+        inset 0 3px 10px rgba(0, 0, 0, 0.25);
+    background: radial-gradient(
+        circle at var(--sheen-x, 50%) var(--sheen-y, 30%), 
+        rgba(255, 255, 255, 0.16) 0%, 
+        transparent 55%
+    );
+    transition: background 0.1s ease-out;
+}
+
+/* Paused State for Inactive Pages to Eliminate CPU/GPU Load */
+.story-illustration-frame.scene-paused * {
+    animation-play-state: paused !important;
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 1. STARS & CELESTIAL
+   ------------------------------------------------------------------------- */
+.living-star-glow {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(255, 240, 140, 0.65) 0%, rgba(255, 210, 60, 0.25) 45%, transparent 70%);
+    animation: starGentleBreathe 3s ease-in-out infinite;
+}
+
+@keyframes starGentleBreathe {
+    0%, 100% {
+        transform: scale(0.92);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.95;
+    }
+}
+
+.living-glint-flash {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #FFFFFF, 0 0 16px #FFE873;
+    animation: eyeGlintFlash 4.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes eyeGlintFlash {
+    0%, 82%, 100% { opacity: 0; transform: scale(0.2); }
+    88% { opacity: 1; transform: scale(1.25); }
+    94% { opacity: 0.7; transform: scale(0.85); }
+}
+
+.living-ambient-star {
+    position: absolute;
+    color: #FFF3B0;
+    font-size: 0.9rem;
+    opacity: 0;
+    pointer-events: none;
+    animation: celestialFloatFade 3.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 5px rgba(255, 230, 140, 0.8));
+}
+
+@keyframes celestialFloatFade {
+    0% { opacity: 0; transform: translateY(0) scale(0.6); }
+    40% { opacity: 0.95; transform: translateY(-7px) scale(1.1); }
+    80% { opacity: 0.8; transform: translateY(-14px) scale(0.9); }
+    100% { opacity: 0; transform: translateY(-22px) scale(0.5); }
+}
+
+.living-light-beam {
+    position: absolute;
+    width: 180px;
+    height: 220px;
+    background: linear-gradient(135deg, rgba(255, 235, 120, 0.38) 0%, rgba(255, 220, 80, 0.08) 60%, transparent 100%);
+    clip-path: polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%);
+    transform-origin: top center;
+    animation: beamRadiatePulse 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes beamRadiatePulse {
+    0%, 100% { opacity: 0.4; transform: rotate(-3deg) scaleY(0.96); }
+    50% { opacity: 0.85; transform: rotate(2deg) scaleY(1.04); }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 2. FAIRIES
+   ------------------------------------------------------------------------- */
+.living-fairy-wings {
+    position: absolute;
+    width: 50px;
+    height: 60px;
+    pointer-events: none;
+    transform-origin: center center;
+    background: radial-gradient(ellipse at center, rgba(235, 210, 255, 0.85) 0%, rgba(180, 230, 255, 0.45) 50%, transparent 75%);
+    border-radius: 50% 50% 30% 30%;
+    filter: drop-shadow(0 0 6px rgba(220, 180, 255, 0.7));
+    animation: fairyWingsFlutter 0.22s ease-in-out infinite alternate;
+}
+
+@keyframes fairyWingsFlutter {
+    0% {
+        transform: scaleX(0.85) rotateY(15deg) rotateZ(-3deg);
+        opacity: 0.75;
+    }
+    100% {
+        transform: scaleX(1.2) rotateY(-25deg) rotateZ(3deg);
+        opacity: 0.95;
+    }
+}
+
+.living-fairy-dust {
+    position: absolute;
+    color: #F8D5FF;
+    font-size: 0.85rem;
+    pointer-events: none;
+    animation: fairyDustDrift 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 4px rgba(240, 190, 255, 0.9));
+}
+
+@keyframes fairyDustDrift {
+    0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+    40% { opacity: 0.95; transform: translate(4px, -12px) scale(1.1); }
+    80% { opacity: 0.7; transform: translate(-3px, -24px) scale(0.8); }
+    100% { opacity: 0; transform: translate(2px, -35px) scale(0.4); }
+}
+
+.living-fairy-aura {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(245, 200, 255, 0.4) 0%, rgba(190, 225, 255, 0.15) 50%, transparent 70%);
+    animation: fairyAuraPulse 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes fairyAuraPulse {
+    0% { transform: scale(0.92); opacity: 0.55; }
+    100% { transform: scale(1.12); opacity: 0.9; }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 3. FIREFLIES & GLOWING BUGS
+   ------------------------------------------------------------------------- */
+.living-firefly-orb {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #FFF59D;
+    box-shadow: 
+        0 0 8px #FFD54F,
+        0 0 18px #FFB300,
+        0 0 32px rgba(255, 179, 0, 0.5);
+    pointer-events: none;
+    animation: fireflyHover 4s ease-in-out infinite;
+}
+
+@keyframes fireflyHover {
+    0%, 100% {
+        transform: translate(0, 0) scale(0.85);
+        opacity: 0.6;
+    }
+    30% {
+        transform: translate(8px, -12px) scale(1.15);
+        opacity: 0.95;
+    }
+    70% {
+        transform: translate(-10px, -6px) scale(0.95);
+        opacity: 0.75;
+    }
+}
+
+.living-bug-glow {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(255, 235, 100, 0.65) 0%, rgba(255, 180, 40, 0.25) 45%, transparent 70%);
+    animation: bugAbdomenGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes bugAbdomenGlow {
+    0%, 100% { transform: scale(0.9); opacity: 0.65; }
+    50% { transform: scale(1.2); opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 210, 50, 0.7)); }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 4. ANIMALS (BEARS, BUNNIES, SQUIRRELS, PETS)
+   ------------------------------------------------------------------------- */
+.living-animal-breathe {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(255, 220, 160, 0.22) 0%, transparent 65%);
+    animation: animalChestRise 4.2s ease-in-out infinite;
+}
+
+@keyframes animalChestRise {
+    0%, 100% { transform: scale(0.96) translateY(0); opacity: 0.5; }
+    50% { transform: scale(1.05) translateY(-3px); opacity: 0.85; }
+}
+
+.living-ear-twitch {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    animation: animalEarTwitch 4.5s ease-in-out infinite;
+}
+
+@keyframes animalEarTwitch {
+    0%, 86%, 100% { transform: rotate(0deg); }
+    90% { transform: rotate(-9deg) scale(1.05); }
+    94% { transform: rotate(6deg) scale(0.98); }
+}
+
+.living-cozy-snuggle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(255, 205, 140, 0.3) 0%, transparent 70%);
+    animation: cozySnugglePulse 3.8s ease-in-out infinite;
+}
+
+@keyframes cozySnugglePulse {
+    0%, 100% { transform: scale(0.95); opacity: 0.55; }
+    50% { transform: scale(1.06); opacity: 0.85; }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 5. BIRDS
+   ------------------------------------------------------------------------- */
+.living-bird-wing {
+    position: absolute;
+    width: 32px;
+    height: 22px;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+    animation: birdWingFlap 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes birdWingFlap {
+    0% { transform: rotate(-8deg) scaleY(0.9); }
+    100% { transform: rotate(14deg) scaleY(1.15) translateY(-3px); }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 6. NATURE & FLOWERS & TREES
+   ------------------------------------------------------------------------- */
+.living-nature-sway {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform-origin: bottom center;
+    animation: natureBreezeSway 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes natureBreezeSway {
+    0% { transform: rotate(-1.5deg) skewX(-0.5deg); }
+    100% { transform: rotate(1.5deg) skewX(0.5deg); }
+}
+
+.living-pollen-spore {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FFF9C4;
+    box-shadow: 0 0 6px #FFF59D;
+    pointer-events: none;
+    animation: pollenDrift 4.5s ease-in-out infinite;
+}
+
+@keyframes pollenDrift {
+    0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+    40% { opacity: 0.85; transform: translate(10px, -15px) scale(1); }
+    80% { opacity: 0.6; transform: translate(-8px, -30px) scale(0.8); }
+    100% { opacity: 0; transform: translate(4px, -45px) scale(0.3); }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 7. CLOUDS & SKY
+   ------------------------------------------------------------------------- */
+.living-cloud-mist {
+    position: absolute;
+    height: 35px;
+    border-radius: 30px;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.1) 60%, transparent 80%);
+    filter: blur(4px);
+    pointer-events: none;
+    animation: cloudMistDrift 14s ease-in-out infinite alternate;
+}
+
+@keyframes cloudMistDrift {
+    0% { transform: translateX(-15px) scale(0.95); opacity: 0.5; }
+    100% { transform: translateX(25px) scale(1.05); opacity: 0.85; }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 8. MOON
+   ------------------------------------------------------------------------- */
+.living-moon-glow {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(255, 255, 220, 0.5) 0%, rgba(245, 235, 170, 0.22) 45%, transparent 72%);
+    pointer-events: none;
+    animation: moonGentleShimmer 4.2s ease-in-out infinite;
+}
+
+@keyframes moonGentleShimmer {
+    0%, 100% { opacity: 0.55; transform: scale(0.95); }
+    50% { opacity: 0.95; transform: scale(1.08); }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 9. CHILDREN (BEDTIME, WINDOW, SMILING)
+   ------------------------------------------------------------------------- */
+.living-child-glow {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(255, 200, 120, 0.38) 0%, rgba(255, 150, 60, 0.12) 50%, transparent 72%);
+    pointer-events: none;
+    animation: childWarmthPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes childWarmthPulse {
+    0%, 100% { transform: scale(0.97); opacity: 0.6; }
+    50% { transform: scale(1.06); opacity: 0.92; }
+}
+
+.living-child-twinkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    box-shadow: 0 0 6px #FFFFFF, 0 0 12px #FFE082;
+    pointer-events: none;
+    animation: childEyeBlink 4s ease-in-out infinite;
+}
+
+@keyframes childEyeBlink {
+    0%, 88%, 100% { opacity: 0; transform: scale(0.2); }
+    92% { opacity: 1; transform: scale(1.2); }
+    96% { opacity: 0.6; transform: scale(0.8); }
+}
+
+/* -------------------------------------------------------------------------
+   LIVING ANIMATIONS: 10. WATER & FISH
+   ------------------------------------------------------------------------- */
+.living-water-caustic {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 80%, rgba(130, 220, 255, 0.25) 0%, transparent 65%);
+    animation: waterCausticRipple 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes waterCausticRipple {
+    0% { opacity: 0.4; transform: scaleY(0.95); }
+    100% { opacity: 0.85; transform: scaleY(1.05); }
+}
+
+.living-water-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(180, 230, 255, 0.3) 60%, transparent 70%);
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+    animation: bubbleFloatRise 3.5s ease-in-out infinite;
+}
+
+@keyframes bubbleFloatRise {
+    0% { opacity: 0; transform: translateY(0) scale(0.5); }
+    30% { opacity: 0.85; transform: translateY(-12px) scale(1); }
+    80% { opacity: 0.6; transform: translateY(-28px) scale(0.9); }
+    100% { opacity: 0; transform: translateY(-40px) scale(0.3); }
+}
+
+/* Interactive click magic burst particles */
+.interactive-magic-burst {
+    position: absolute;
+    pointer-events: none;
+    z-index: 25;
+}
+
+.burst-particle {
+    position: absolute;
+    font-size: 1rem;
+    animation: particleFly 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes particleFly {
+    0% { opacity: 1; transform: translate(0, 0) scale(0.5); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.3); }
+}
+
+/* Accessibility: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .popout-scene-viewport,
+    .story-illustration-frame:not(:hover) .popout-scene-viewport,
+    .popout-depth-layer,
+    .living-star-glow,
+    .living-glint-flash,
+    .living-ambient-star,
+    .living-light-beam,
+    .living-fairy-wings,
+    .living-fairy-dust,
+    .living-fairy-aura,
+    .living-firefly-orb,
+    .living-bug-glow,
+    .living-animal-breathe,
+    .living-ear-twitch,
+    .living-cozy-snuggle,
+    .living-bird-wing,
+    .living-nature-sway,
+    .living-pollen-spore,
+    .living-cloud-mist,
+    .living-moon-glow,
+    .living-child-glow,
+    .living-child-twinkle,
+    .living-water-caustic,
+    .living-water-bubble,
+    .popout-overlay-character-img {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* =============================================================================
+   12. DASHBOARD FAVORITES, READING HISTORY & TOAST NOTIFICATIONS
+   ============================================================================= */
+
+/* Favorite Heart Toggle Button on Book Covers */
+.btn-fav-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(220, 180, 220, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 25;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    color: #6C5B7B;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.btn-fav-toggle:hover {
+    transform: scale(1.15);
+    background: #FFFFFF;
+    box-shadow: 0 6px 14px rgba(220, 80, 120, 0.35);
+}
+
+.btn-fav-toggle:active {
+    transform: scale(0.95);
+}
+
+.btn-fav-toggle.is-favorited {
+    background: #FFFFFF;
+}
+
+.btn-fav-toggle.is-favorited i {
+    color: #E63946 !important;
+    filter: drop-shadow(0 2px 4px rgba(230, 57, 70, 0.35));
+    animation: heartPulse 0.35s ease-out;
+}
+
+@keyframes heartPulse {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Reading History Cards */
+.history-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(220, 205, 240, 0.6);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.history-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(120, 90, 160, 0.12) !important;
+    border-color: rgba(180, 140, 220, 0.8);
+}
+
+.history-book-cover-box {
+    width: 78px;
+    height: 110px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #121026;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.history-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+}
+
+.history-title {
+    font-family: var(--font-heading);
+    color: #2D1D45;
+    font-size: 1.15rem;
+}
+
+.bg-pastel-lavender {
+    background-color: #F0E8F8 !important;
+}
+
+.history-progress-bar {
+    border-radius: 10px;
+    background-color: #EDE7F6;
+    overflow: hidden;
+}
+
+.bg-lavender-gradient {
+    background: linear-gradient(90deg, #8A64D6 0%, #D4A853 100%);
+    border-radius: 10px;
+}
+
+.btn-continue-reading {
+    background: linear-gradient(135deg, #8A64D6 0%, #9F79EE 100%);
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 0.35rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    transition: all 0.25s ease;
+}
+
+.btn-continue-reading:hover {
+    background: linear-gradient(135deg, #744BC2 0%, #8A64D6 100%);
+    color: #FFFFFF;
+    transform: translateX(2px);
+    box-shadow: 0 4px 10px rgba(138, 100, 214, 0.3);
+}
+
+/* Empty State Card */
+.empty-state-card {
+    background: #FFFFFF;
+    border: 2px dashed rgba(200, 180, 230, 0.6);
+}
+
+.empty-emoji {
+    font-size: 2.8rem;
+    filter: drop-shadow(0 4px 8px rgba(180, 140, 220, 0.25));
+}
+
+/* Magical Toast Notifications */
+.storybook-toast {
+    background: rgba(45, 29, 69, 0.95);
+    color: #FFFFFF;
+    border: 1px solid rgba(220, 180, 255, 0.4);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.storybook-toast .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+/* ==============================================================================
+   LOGIN LANDING PAGE FULLSCREEN BACKGROUND (PLAIN, IMAGE, VIDEO)
+   ============================================================================== */
+.login-fullscreen-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    overflow: hidden;
+    background: #FAF7FD;
+}
+
+.login-bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.35s ease-in;
+}
+
+.login-bg-video.video-ready {
+    opacity: 1;
+}
+
+.login-bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 1;
+}
+
+.login-media-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(18, 12, 32, 0.35) 0%, rgba(18, 12, 32, 0.65) 100%);
+    backdrop-filter: blur(2px);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Enhanced Login Form Contrast when Background Media is active */
+body.has-media-bg .storybook-card {
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+}
+
+/* Admin Dashboard: Login Background Preview Mockup */
+.login-preview-window {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    min-height: 380px;
+    background: #FAF7FD;
+    border: 2px solid rgba(138, 92, 246, 0.2);
+}
+
+.login-preview-screen {
+    position: relative;
+    width: 100%;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+.login-preview-bg-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.login-preview-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(18, 12, 32, 0.35) 0%, rgba(18, 12, 32, 0.65) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.login-preview-card-mockup {
+    position: relative;
+    z-index: 5;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 1.5rem 1.8rem;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(220, 200, 245, 0.8);
+}
+
+/* ==============================================================================
+   NIGHT SKY ATMOSPHERE TOGGLE STATE
+   ============================================================================== */
+body.night-sky-disabled .reader-sky-bg,
+[data-night-sky="false"] .reader-sky-bg,
+body.night-sky-disabled .closed-book-magic-aura,
+[data-night-sky="false"] .closed-book-magic-aura,
+body.night-sky-disabled .magical-sky,
+[data-night-sky="false"] .magical-sky {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* ==============================================================================
+   DARK MODE (THEME: DARK)
+   Deep Twilight & Bedtime Indigo Palette - Comprehensive Text Contrast System
+   ============================================================================== */
+:root[data-theme="dark"],
+body.dark-theme {
+    --color-cream: #181226;
+    --color-cream-soft: #120D1D;
+    --color-beige: #201734;
+    --color-beige-dark: #2B1F44;
+
+    --color-lavender-light: #251B3E;
+    --color-lavender-soft: #322552;
+    --color-lavender-mid: #9E88CA;
+    --color-lavender-deep: #D4C7EC;
+
+    --color-blush-light: #281932;
+    --color-blush-soft: #382046;
+    --color-blush-mid: #D288A5;
+    --color-blush-deep: #F0A5C2;
+
+    --color-ink-dark: #FAF6FF;
+    --color-ink-muted: #D4C7EC;
+    --color-ink-light: #AFA4C4;
+
+    /* Theme-specific tokens */
+    --text-primary: #FAF6FF;
+    --text-secondary: #D4C7EC;
+    --text-muted: #AFA4C4;
+    --bg-card: #1E1632;
+    --bg-surface: #241A3A;
+
+    --border-storybook: rgba(212, 168, 83, 0.35);
+    --border-pastel: rgba(180, 150, 230, 0.25);
+    --shadow-storybook: 0 20px 50px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.25);
+    --shadow-storybook-hover: 0 24px 60px rgba(0, 0, 0, 0.6), 0 12px 24px rgba(180, 140, 230, 0.15);
+}
+
+/* Global Dark Mode Text & Contrast Overrides */
+[data-theme="dark"] body,
+body.dark-theme {
+    color: #FAF6FF;
+}
+
+[data-theme="dark"] .text-dark,
+body.dark-theme .text-dark {
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .text-muted,
+body.dark-theme .text-muted {
+    color: #AFA4C4 !important;
+}
+
+[data-theme="dark"] .text-lavender-deep,
+body.dark-theme .text-lavender-deep {
+    color: #D7C4F7 !important;
+}
+
+[data-theme="dark"] .text-pastel-dark,
+body.dark-theme .text-pastel-dark {
+    color: #FAF6FF !important;
+}
+
+/* Dashboard Body Dark Theme */
+body.dark-theme.dashboard-body,
+[data-theme="dark"] body.dashboard-body {
+    background-color: #120D1D;
+    background-image: 
+        radial-gradient(circle at 10% 10%, rgba(42, 28, 68, 0.85) 0%, transparent 40%),
+        radial-gradient(circle at 90% 15%, rgba(55, 30, 60, 0.75) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(30, 20, 50, 0.85) 0%, transparent 50%);
+    color: #FAF6FF;
+}
+
+/* Top Navigation Bar */
+[data-theme="dark"] .dashboard-navbar,
+body.dark-theme .dashboard-navbar {
+    background: rgba(20, 14, 32, 0.94);
+    border-bottom: 1.5px solid rgba(180, 150, 230, 0.18);
+    backdrop-filter: blur(14px);
+}
+
+[data-theme="dark"] .brand-text-logo,
+body.dark-theme .brand-text-logo {
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .nav-pill-item,
+body.dark-theme .nav-pill-item {
+    color: #C8BADF;
+}
+
+[data-theme="dark"] .nav-pill-item:hover,
+body.dark-theme .nav-pill-item:hover {
+    color: #FFFFFF;
+    background: rgba(180, 140, 230, 0.16);
+}
+
+[data-theme="dark"] .nav-pill-item.active,
+body.dark-theme .nav-pill-item.active {
+    background: linear-gradient(135deg, #7E57C2 0%, #AB47BC 100%);
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .btn-nav-icon,
+body.dark-theme .btn-nav-icon {
+    background: rgba(45, 33, 70, 0.75);
+    border: 1px solid rgba(180, 150, 230, 0.25);
+    color: #E2D7F5;
+}
+
+[data-theme="dark"] .btn-nav-icon:hover,
+body.dark-theme .btn-nav-icon:hover {
+    background: rgba(70, 50, 105, 0.9);
+    color: #FFFFFF;
+    border-color: rgba(212, 168, 83, 0.5);
+}
+
+[data-theme="dark"] #themeToggleBtn:hover,
+body.dark-theme #themeToggleBtn:hover {
+    transform: rotate(15deg) scale(1.05);
+}
+
+[data-theme="dark"] #themeToggleIcon.fa-sun,
+body.dark-theme #themeToggleIcon.fa-sun {
+    color: #FFD54F;
+    filter: drop-shadow(0 0 6px rgba(255, 213, 79, 0.6));
+}
+
+[data-theme="dark"] .btn-profile-pill,
+body.dark-theme .btn-profile-pill {
+    background: rgba(45, 33, 70, 0.75);
+    border-color: rgba(180, 150, 230, 0.25);
+    color: #FAF6FF;
+}
+
+[data-theme="dark"] .btn-profile-pill:hover,
+body.dark-theme .btn-profile-pill:hover {
+    background: rgba(70, 50, 105, 0.9);
+    color: #FFFFFF;
+    border-color: rgba(180, 150, 230, 0.45);
+}
+
+/* Sidebar Navigation */
+[data-theme="dark"] .dashboard-sidebar,
+body.dark-theme .dashboard-sidebar {
+    background: rgba(18, 12, 30, 0.94);
+    border-right: 1.5px solid rgba(180, 150, 230, 0.16);
+    backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .sidebar-heading,
+body.dark-theme .sidebar-heading {
+    color: #A99BC2;
+}
+
+[data-theme="dark"] .sidebar-link,
+body.dark-theme .sidebar-link {
+    color: #C8BADF;
+}
+
+[data-theme="dark"] .sidebar-link:hover,
+body.dark-theme .sidebar-link:hover {
+    background: rgba(180, 140, 230, 0.16);
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .sidebar-link.active,
+body.dark-theme .sidebar-link.active {
+    background: rgba(126, 87, 194, 0.25);
+    color: #FFFFFF;
+    border-left-color: #B388FF;
+}
+
+[data-theme="dark"] .sidebar-link.logout-link.text-danger,
+body.dark-theme .sidebar-link.logout-link.text-danger {
+    color: #FF8595 !important;
+}
+
+[data-theme="dark"] .btn-sidebar-toggle,
+body.dark-theme .btn-sidebar-toggle {
+    color: #FAF6FF;
+    background: rgba(45, 33, 70, 0.75);
+    border: 1px solid rgba(180, 150, 230, 0.25);
+}
+
+/* Panoramic Welcome Banner */
+[data-theme="dark"] .dashboard-welcome-banner,
+body.dark-theme .dashboard-welcome-banner {
+    background: linear-gradient(135deg, #221738 0%, #291B3E 50%, #1F1534 100%) !important;
+    border-color: rgba(180, 150, 230, 0.25) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="dark"] .banner-greeting-badge,
+body.dark-theme .banner-greeting-badge {
+    background: rgba(45, 33, 70, 0.75) !important;
+    border-color: rgba(180, 150, 230, 0.3) !important;
+    color: #E8DEF8 !important;
+}
+
+[data-theme="dark"] .banner-user-heading,
+body.dark-theme .banner-user-heading {
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .banner-user-subtitle,
+body.dark-theme .banner-user-subtitle {
+    color: #D4C7EC !important;
+}
+
+/* Standing 3D Books and Shelf */
+[data-theme="dark"] .shelf-title,
+body.dark-theme .shelf-title {
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .shelf-count-badge,
+body.dark-theme .shelf-count-badge {
+    background: rgba(45, 33, 70, 0.8) !important;
+    color: #D7C4F7 !important;
+    border: 1px solid rgba(180, 150, 230, 0.3) !important;
+}
+
+[data-theme="dark"] .view-all-link,
+body.dark-theme .view-all-link {
+    color: #D4C7EC !important;
+}
+
+[data-theme="dark"] .view-all-link:hover,
+body.dark-theme .view-all-link:hover {
+    color: #FFD54F !important;
+}
+
+[data-theme="dark"] .book-card-title,
+body.dark-theme .book-card-title,
+[data-theme="dark"] .book-card-title a,
+body.dark-theme .book-card-title a,
+[data-theme="dark"] .book-card-title a.text-dark,
+body.dark-theme .book-card-title a.text-dark,
+[data-theme="dark"] .book-title-link,
+body.dark-theme .book-title-link {
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .book-card-title a:hover,
+body.dark-theme .book-card-title a:hover,
+[data-theme="dark"] .book-title-link:hover,
+body.dark-theme .book-title-link:hover {
+    color: #FFD54F !important;
+}
+
+[data-theme="dark"] .book-category-pill,
+body.dark-theme .book-category-pill {
+    background: rgba(45, 33, 70, 0.85) !important;
+    border-color: rgba(180, 150, 230, 0.35) !important;
+    color: #E2D7F5 !important;
+}
+
+[data-theme="dark"] .book-quick-stats,
+body.dark-theme .book-quick-stats {
+    color: #AFA4C4 !important;
+}
+
+[data-theme="dark"] .btn-open-book-pill,
+body.dark-theme .btn-open-book-pill {
+    background: rgba(45, 33, 70, 0.9) !important;
+    color: #E8DEF8 !important;
+    border: 1.5px solid rgba(180, 150, 230, 0.4) !important;
+}
+
+[data-theme="dark"] .btn-open-book-pill:hover,
+body.dark-theme .btn-open-book-pill:hover {
+    background: linear-gradient(135deg, #7E57C2 0%, #AB47BC 100%) !important;
+    color: #FFFFFF !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 14px rgba(126, 87, 194, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+/* History Cards */
+[data-theme="dark"] .history-card,
+body.dark-theme .history-card {
+    background: #1E1632 !important;
+    border-color: rgba(180, 150, 230, 0.25) !important;
+    color: #FAF6FF !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .history-card:hover,
+body.dark-theme .history-card:hover {
+    border-color: rgba(212, 168, 83, 0.5) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45) !important;
+}
+
+[data-theme="dark"] .history-title,
+body.dark-theme .history-title {
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .history-progress-bar,
+body.dark-theme .history-progress-bar {
+    background-color: #2D2146 !important;
+}
+
+[data-theme="dark"] .bg-pastel-lavender,
+body.dark-theme .bg-pastel-lavender {
+    background-color: rgba(179, 136, 255, 0.18) !important;
+    color: #D7C4F7 !important;
+}
+
+/* Empty State Cards */
+[data-theme="dark"] .empty-state-card,
+body.dark-theme .empty-state-card {
+    background: #1B132C !important;
+    border-color: rgba(180, 150, 230, 0.25) !important;
+    color: #C8BADF !important;
+}
+
+[data-theme="dark"] .empty-state-card h4,
+body.dark-theme .empty-state-card h4 {
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .empty-state-card p,
+body.dark-theme .empty-state-card p {
+    color: #AFA4C4 !important;
+}
+
+/* Dropdown Menus */
+[data-theme="dark"] .storybook-dropdown,
+[data-theme="dark"] .dropdown-menu,
+body.dark-theme .storybook-dropdown,
+body.dark-theme .dropdown-menu {
+    background: #1F1634 !important;
+    border-color: rgba(180, 150, 230, 0.25) !important;
+    color: #FAF6FF !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .dropdown-header,
+body.dark-theme .dropdown-header {
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .dropdown-divider,
+body.dark-theme .dropdown-divider {
+    border-color: rgba(180, 150, 230, 0.18) !important;
+}
+
+[data-theme="dark"] .dropdown-item,
+body.dark-theme .dropdown-item {
+    color: #D4C7EC !important;
+}
+
+[data-theme="dark"] .dropdown-item:hover,
+body.dark-theme .dropdown-item:hover {
+    background: rgba(180, 140, 230, 0.18) !important;
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .dropdown-item.text-danger,
+body.dark-theme .dropdown-item.text-danger {
+    color: #FF8595 !important;
+}
+
+/* Modals */
+[data-theme="dark"] .storybook-modal-card,
+body.dark-theme .storybook-modal-card {
+    background: #1F1634 !important;
+    border: 1px solid rgba(180, 150, 230, 0.28) !important;
+    color: #FAF6FF !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme="dark"] .storybook-modal-card .storybook-title-sm,
+body.dark-theme .storybook-modal-card .storybook-title-sm,
+[data-theme="dark"] .modal-title,
+body.dark-theme .modal-title {
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .storybook-modal-text,
+body.dark-theme .storybook-modal-text {
+    color: #D4C7EC !important;
+}
+
+[data-theme="dark"] .storybook-modal-card span,
+body.dark-theme .storybook-modal-card span {
+    color: #FAF6FF;
+}
+
+[data-theme="dark"] .storybook-modal-card .btn-close,
+body.dark-theme .storybook-modal-card .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+/* User Auth Cards & Forms (Login & Register) */
+body.dark-theme.storybook-body,
+[data-theme="dark"] body.storybook-body {
+    background-color: #120D1D;
+    color: #FAF6FF;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(42, 28, 68, 0.8) 0%, transparent 40%),
+        radial-gradient(circle at 90% 15%, rgba(55, 30, 60, 0.7) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(30, 20, 50, 0.8) 0%, transparent 50%);
+}
+
+[data-theme="dark"] .storybook-card,
+body.dark-theme .storybook-card {
+    background: rgba(30, 22, 50, 0.94) !important;
+    border: 1px solid rgba(180, 150, 230, 0.25) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .storybook-title,
+body.dark-theme .storybook-title {
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .storybook-tagline,
+body.dark-theme .storybook-tagline {
+    color: #D4C7EC !important;
+}
+
+[data-theme="dark"] .storybook-label,
+body.dark-theme .storybook-label {
+    color: #DDD4EE !important;
+}
+
+[data-theme="dark"] .storybook-input,
+body.dark-theme .storybook-input {
+    background: #181129 !important;
+    border-color: rgba(180, 150, 230, 0.3) !important;
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .storybook-input:focus,
+body.dark-theme .storybook-input:focus {
+    background: #1D1432 !important;
+    border-color: #B388FF !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(179, 136, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .storybook-input::placeholder,
+body.dark-theme .storybook-input::placeholder {
+    color: #8E7F9E !important;
+}
+
+[data-theme="dark"] .storybook-check-label,
+body.dark-theme .storybook-check-label {
+    color: #D4C7EC !important;
+}
+
+[data-theme="dark"] .storybook-link,
+body.dark-theme .storybook-link {
+    color: #B388FF !important;
+}
+
+[data-theme="dark"] .storybook-link:hover,
+body.dark-theme .storybook-link:hover {
+    color: #D4C7EC !important;
+}
+
+[data-theme="dark"] .switch-auth-text,
+body.dark-theme .switch-auth-text {
+    color: #C8BADF !important;
+}
+
+[data-theme="dark"] .input-icon,
+body.dark-theme .input-icon {
+    color: #AFA4C4 !important;
+}
+
+[data-theme="dark"] .btn-toggle-password,
+body.dark-theme .btn-toggle-password {
+    color: #AFA4C4 !important;
+}
+
+[data-theme="dark"] .btn-toggle-password:hover,
+body.dark-theme .btn-toggle-password:hover {
+    color: #FAF6FF !important;
+}
+
+/* Secondary Buttons */
+[data-theme="dark"] .btn-storybook-secondary,
+body.dark-theme .btn-storybook-secondary {
+    background: rgba(45, 33, 70, 0.8) !important;
+    color: #D4C7EC !important;
+    border-color: rgba(180, 150, 230, 0.3) !important;
+}
+
+[data-theme="dark"] .btn-storybook-secondary:hover,
+body.dark-theme .btn-storybook-secondary:hover {
+    background: rgba(65, 48, 100, 0.9) !important;
+    color: #FFFFFF !important;
+}
+
+/* Alerts & Toasts */
+[data-theme="dark"] .storybook-alert,
+body.dark-theme .storybook-alert {
+    border-color: rgba(180, 150, 230, 0.3) !important;
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .storybook-toast,
+body.dark-theme .storybook-toast {
+    background: #1F1634 !important;
+    border-color: rgba(180, 150, 230, 0.3) !important;
+    color: #FAF6FF !important;
+}
+
+[data-theme="dark"] .storybook-toast .btn-close,
+body.dark-theme .storybook-toast .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+[data-theme="dark"] .border-pastel,
+body.dark-theme .border-pastel {
+    border-color: rgba(180, 150, 230, 0.2) !important;
+}
+
+/* Reader Nav in Dark Mode */
+[data-theme="dark"] .reader-nav-header,
+body.dark-theme .reader-nav-header {
+    background: rgba(15, 10, 25, 0.96);
+    border-bottom: 1px solid rgba(180, 150, 230, 0.2);
+}
+
+
+
+

@@ -1,0 +1,350 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Login Page Background · Once Upon a Page{% endblock %}
+{% block page_title %}Login Page Background{% endblock %}
+
+{% block content %}
+<!-- Sub-navigation Pills -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+        <h4 class="admin-card-title mb-1">🎨 Page Background & Atmosphere Management</h4>
+        <p class="text-muted small mb-0">Configure visual themes, images, and videos for public reader screens.</p>
+    </div>
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a class="nav-link rounded-pill px-3 py-1 text-secondary" href="{{ url_for('admin_welcome') }}">
+                <i class="fa-solid fa-sparkles me-1"></i> Welcome Page
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active rounded-pill px-3 py-1" href="{{ url_for('admin_login_settings') }}">
+                <i class="fa-solid fa-door-open me-1"></i> Login Page
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Settings & Upload Form -->
+    <div class="col-12 col-lg-6">
+        <div class="admin-card">
+            <h4 class="admin-card-title mb-2">🚪 Reader Login Landing Page Background</h4>
+            <p class="text-muted small mb-4">
+                Customize the background on the login landing page (<code class="text-primary">/login</code>). You can use the original pastel theme with floating celestial elements, an illustration image, or a muted looping video.
+            </p>
+
+            <form action="{{ url_for('admin_login_settings') }}" method="POST" enctype="multipart/form-data" id="loginSettingsForm">
+                
+                <!-- Background Mode Selection -->
+                <div class="mb-4 p-3 rounded-3" style="background: rgba(138, 92, 246, 0.08); border: 1px solid rgba(138, 92, 246, 0.25);">
+                    <label class="form-label small fw-bold d-block mb-2 text-dark">
+                        <i class="fa-solid fa-sliders me-1 text-primary"></i> Active Background Type
+                    </label>
+                    <div class="d-flex flex-column gap-2">
+                        <!-- Plain -->
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="login_bg_type" id="loginBgTypePlain" value="plain" 
+                                   {% if (settings.login_bg_type or 'plain') == 'plain' %}checked{% endif %}>
+                            <label class="form-check-label fw-semibold" for="loginBgTypePlain">
+                                <i class="fa-solid fa-wand-magic-sparkles me-1 text-secondary"></i> Plain Background (Default Pastel Cream & Stars)
+                            </label>
+                            <div class="form-text small ps-4">Light storybook pastel theme with floating stars, moons, and magical bedtime elements.</div>
+                        </div>
+
+                        <!-- Image -->
+                        <div class="form-check mt-1">
+                            <input class="form-check-input" type="radio" name="login_bg_type" id="loginBgTypeImage" value="image" 
+                                   {% if settings.login_bg_type == 'image' %}checked{% endif %}>
+                            <label class="form-check-label fw-semibold" for="loginBgTypeImage">
+                                <i class="fa-solid fa-image me-1 text-primary"></i> Image Background
+                            </label>
+                            <div class="form-text small ps-4">Full-viewport illustration or photo covering the entire screen.</div>
+                        </div>
+
+                        <!-- Video -->
+                        <div class="form-check mt-1">
+                            <input class="form-check-input" type="radio" name="login_bg_type" id="loginBgTypeVideo" value="video" 
+                                   {% if settings.login_bg_type == 'video' %}checked{% endif %}>
+                            <label class="form-check-label fw-semibold" for="loginBgTypeVideo">
+                                <i class="fa-solid fa-video me-1" style="color: #9c27b0;"></i> Video Background (Looping & Strictly Muted)
+                            </label>
+                            <div class="form-text small ps-4">Continuous video loop. Always muted without sound. Smooth loading with zero image flash.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. Image Background Section -->
+                <div id="loginSectionImage" class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold mb-0">
+                            <i class="fa-solid fa-image me-1 text-primary"></i> Login Background Image
+                        </label>
+                        {% if settings.login_bg_type == 'image' and settings.login_bg_image %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle small">Currently Active</span>
+                        {% endif %}
+                    </div>
+                    <div class="page-preview-box mb-2" style="height: 200px; background: #201733;">
+                        <img 
+                            src="{% if settings.login_bg_image %}{{ media_url(settings.login_bg_image) }}{% endif %}" 
+                            class="page-preview-image" 
+                            id="preview_login_bg" 
+                            style="{% if settings.login_bg_image %}display: block;{% else %}display: none;{% endif %} max-height: 180px; object-fit: contain;">
+                        <div id="image_preview_placeholder" class="text-center p-3 text-white-50" style="{% if settings.login_bg_image %}display: none;{% endif %}">
+                            <i class="fa-regular fa-image fs-1 mb-2 text-muted"></i>
+                            <p class="small mb-0">No custom login image uploaded yet.</p>
+                        </div>
+                    </div>
+                    <input 
+                        type="file" 
+                        name="login_bg" 
+                        id="input_login_bg"
+                        class="form-control form-control-sm" 
+                        accept="image/png, image/jpeg, image/webp, image/gif">
+                    {% if settings.login_bg_image %}
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="remove_login_image" id="removeLoginImage" value="1">
+                        <label class="form-check-label small text-danger" for="removeLoginImage">
+                            <i class="fa-solid fa-trash-can me-1"></i> Remove uploaded login image
+                        </label>
+                    </div>
+                    {% endif %}
+                    <div class="form-text small">Recommended: 1920x1080 or high-resolution illustration. Covers screen with object-fit: cover.</div>
+                </div>
+
+                <!-- 2. Video Background Section -->
+                <div id="loginSectionVideo" class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold mb-0">
+                            <i class="fa-solid fa-video me-1" style="color: #9c27b0;"></i> Login Background Video
+                        </label>
+                        {% if settings.login_bg_type == 'video' and settings.login_bg_video %}
+                            <span class="badge bg-purple-subtle text-purple border border-purple-subtle small" style="background:#F3E5F5; color:#7B1FA2;">Currently Active</span>
+                        {% endif %}
+                    </div>
+                    <div class="page-preview-box mb-2 d-flex align-items-center justify-content-center" style="height: 200px; background: #140E24;">
+                        <video 
+                            id="preview_login_video" 
+                            controls 
+                            loop 
+                            muted 
+                            playsinline 
+                            style="max-height: 180px; max-width: 100%; border-radius: 8px; {% if not settings.login_bg_video %}display: none;{% endif %}">
+                            <source src="{% if settings.login_bg_video %}{{ media_url(settings.login_bg_video) }}{% endif %}" type="video/mp4">
+                        </video>
+                        <div id="video_preview_placeholder" class="text-center p-3 text-white-50" style="{% if settings.login_bg_video %}display: none;{% endif %}">
+                            <i class="fa-solid fa-film fs-1 mb-2 text-muted"></i>
+                            <p class="small mb-0">No video uploaded yet. Supports MP4, WebM, MOV.</p>
+                        </div>
+                    </div>
+                    <input 
+                        type="file" 
+                        name="login_bg_video" 
+                        id="input_login_bg_video" 
+                        class="form-control form-control-sm" 
+                        accept="video/mp4, video/webm, video/quicktime, video/ogg, .mp4, .webm, .mov">
+                    {% if settings.login_bg_video %}
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="remove_login_video" id="removeLoginVideo" value="1">
+                        <label class="form-check-label small text-danger" for="removeLoginVideo">
+                            <i class="fa-solid fa-trash-can me-1"></i> Remove uploaded login video
+                        </label>
+                    </div>
+                    {% endif %}
+                    <div class="form-text small">Plays in continuous loop, strictly muted without sound. Behind the login form with readability protection.</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-admin-primary rounded-pill px-4">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Save Login Background
+                    </button>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-secondary rounded-pill px-3" target="_blank">
+                        <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Preview Login Page
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Live Visual Mockup -->
+    <div class="col-12 col-lg-6">
+        <div class="admin-card h-100">
+            <h4 class="admin-card-title mb-2">👁️ Live Visual Mockup</h4>
+            <p class="text-muted small mb-3">Instant preview of how readers see the login landing screen and login card.</p>
+
+            <div class="login-preview-window">
+                <div class="login-preview-screen">
+                    
+                    <!-- 1. Plain Mockup Background -->
+                    <div id="mockup_login_plain" class="login-preview-bg-element" style="background: #FAF7FD; {% if settings.login_bg_type in ['image', 'video'] and ((settings.login_bg_type == 'image' and settings.login_bg_image) or (settings.login_bg_type == 'video' and settings.login_bg_video)) %}display: none;{% endif %}">
+                        <div class="w-100 h-100 position-relative" style="overflow: hidden;">
+                            <span style="position: absolute; top: 15%; left: 10%; font-size: 1.2rem; color: #E8D5F5;">✦</span>
+                            <span style="position: absolute; top: 65%; left: 8%; font-size: 1.4rem; color: #FFE8B6;">🌙</span>
+                            <span style="position: absolute; top: 20%; right: 12%; font-size: 1rem; color: #E8D5F5;">✧</span>
+                            <span style="position: absolute; top: 75%; right: 15%; font-size: 1.2rem; color: #FFD6E8;">✨</span>
+                            <span style="position: absolute; top: 40%; right: 6%; font-size: 1.2rem; color: #E8D5F5;">✦</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. Image Mockup Background -->
+                    <img 
+                        src="{% if settings.login_bg_image %}{{ media_url(settings.login_bg_image) }}{% endif %}" 
+                        alt="Login Background Preview" 
+                        id="mockup_login_img"
+                        class="login-preview-bg-element" 
+                        style="{% if settings.login_bg_type != 'image' or not settings.login_bg_image %}display: none;{% endif %}">
+
+                    <!-- 3. Video Mockup Background -->
+                    <video 
+                        id="mockup_login_video" 
+                        class="login-preview-bg-element" 
+                        autoplay 
+                        loop 
+                        muted 
+                        playsinline 
+                        style="{% if settings.login_bg_type != 'video' or not settings.login_bg_video %}display: none;{% endif %}">
+                        <source src="{% if settings.login_bg_video %}{{ media_url(settings.login_bg_video) }}{% endif %}" type="video/mp4">
+                    </video>
+
+                    <!-- Semi-transparent Readability Overlay -->
+                    <div id="mockup_login_overlay" class="login-preview-overlay" style="{% if settings.login_bg_type == 'plain' %}display: none;{% endif %}"></div>
+
+                    <!-- Miniature Login Card Mockup -->
+                    <div class="login-preview-card-mockup">
+                        <div class="small mb-1 text-warning">✨ 📖 ✨</div>
+                        <h5 class="fw-bold mb-1" style="font-family: 'Cinzel Decorative', serif; font-size: 1.05rem; color: #3B2A57;">Once Upon a Page</h5>
+                        <p class="text-muted mb-3" style="font-size: 0.72rem; font-style: italic;">Every page holds a little magic.</p>
+                        
+                        <div class="mb-2 text-start">
+                            <label class="form-label mb-1" style="font-size: 0.68rem; color: #555;">Email Address</label>
+                            <input type="text" class="form-control form-control-sm" placeholder="reader@fairytale.com" disabled style="font-size: 0.72rem; background: #FFF;">
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label class="form-label mb-1" style="font-size: 0.68rem; color: #555;">Secret Passphrase</label>
+                            <input type="password" class="form-control form-control-sm" value="••••••••" disabled style="font-size: 0.72rem; background: #FFF;">
+                        </div>
+
+                        <button type="button" class="btn btn-sm w-100 rounded-pill fw-bold text-white shadow-sm" disabled style="background: linear-gradient(135deg, #B388FF 0%, #E040FB 100%); font-size: 0.78rem;">
+                            ✨ Open the Storybook
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mt-3 p-3 bg-light rounded-3 border">
+                <div class="d-flex align-items-center gap-2 small text-muted">
+                    <i class="fa-solid fa-circle-info text-primary"></i>
+                    <span><strong>Audio Note:</strong> Login page videos are strictly muted by default to preserve a gentle reader experience during authentication.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic Live Mockup JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const radioPlain = document.getElementById('loginBgTypePlain');
+    const radioImage = document.getElementById('loginBgTypeImage');
+    const radioVideo = document.getElementById('loginBgTypeVideo');
+
+    const mockupPlain = document.getElementById('mockup_login_plain');
+    const mockupImg = document.getElementById('mockup_login_img');
+    const mockupVideo = document.getElementById('mockup_login_video');
+    const mockupOverlay = document.getElementById('mockup_login_overlay');
+
+    const inputImg = document.getElementById('input_login_bg');
+    const previewImg = document.getElementById('preview_login_bg');
+    const imgPlaceholder = document.getElementById('image_preview_placeholder');
+
+    const inputVideo = document.getElementById('input_login_bg_video');
+    const previewVideo = document.getElementById('preview_login_video');
+    const videoPlaceholder = document.getElementById('video_preview_placeholder');
+
+    function updateMockup() {
+        if (radioPlain.checked) {
+            if (mockupPlain) mockupPlain.style.display = 'block';
+            if (mockupImg) mockupImg.style.display = 'none';
+            if (mockupVideo) mockupVideo.style.display = 'none';
+            if (mockupOverlay) mockupOverlay.style.display = 'none';
+        } else if (radioImage.checked) {
+            if (mockupPlain) mockupPlain.style.display = 'none';
+            if (mockupImg && (mockupImg.getAttribute('src') || '').trim() !== '') {
+                mockupImg.style.display = 'block';
+            } else {
+                if (mockupPlain) mockupPlain.style.display = 'block';
+            }
+            if (mockupVideo) mockupVideo.style.display = 'none';
+            if (mockupOverlay) mockupOverlay.style.display = 'block';
+        } else if (radioVideo.checked) {
+            if (mockupPlain) mockupPlain.style.display = 'none';
+            if (mockupImg) mockupImg.style.display = 'none';
+            if (mockupVideo) {
+                mockupVideo.style.display = 'block';
+                mockupVideo.muted = true;
+                mockupVideo.play().catch(function() {});
+            }
+            if (mockupOverlay) mockupOverlay.style.display = 'block';
+        }
+    }
+
+    [radioPlain, radioImage, radioVideo].forEach(r => {
+        if (r) r.addEventListener('change', updateMockup);
+    });
+
+    // Image file selection handler
+    if (inputImg) {
+        inputImg.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                if (previewImg) {
+                    previewImg.src = url;
+                    previewImg.style.display = 'block';
+                }
+                if (imgPlaceholder) imgPlaceholder.style.display = 'none';
+                if (mockupImg) {
+                    mockupImg.src = url;
+                    mockupImg.style.display = 'block';
+                }
+                if (radioImage) {
+                    radioImage.checked = true;
+                }
+                updateMockup();
+            }
+        });
+    }
+
+    // Video file selection handler
+    if (inputVideo) {
+        inputVideo.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                if (previewVideo) {
+                    previewVideo.src = url;
+                    previewVideo.style.display = 'block';
+                    previewVideo.muted = true;
+                    previewVideo.load();
+                    previewVideo.play().catch(function() {});
+                }
+                if (videoPlaceholder) videoPlaceholder.style.display = 'none';
+                if (mockupVideo) {
+                    mockupVideo.src = url;
+                    mockupVideo.style.display = 'block';
+                    mockupVideo.muted = true;
+                    mockupVideo.load();
+                    mockupVideo.play().catch(function() {});
+                }
+                if (radioVideo) {
+                    radioVideo.checked = true;
+                }
+                updateMockup();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

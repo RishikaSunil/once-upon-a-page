@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %} · Once Upon a Page</title>
+
+    <!-- Google Fonts: Cinzel Decorative, Playfair Display, Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js for real DB analytics charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+    <!-- Custom Admin Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="admin-body">
+
+    <div class="admin-wrapper">
+
+        <!-- =================================================================== -->
+        <!-- Admin Left Sidebar Navigation                                       -->
+        <!-- =================================================================== -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            
+            <div>
+                <!-- Brand Header -->
+                <div class="admin-sidebar-brand d-flex align-items-center justify-content-between">
+                    <a href="{{ url_for('admin_dashboard') }}" class="admin-brand-link">
+                        <span>📖</span>
+                        <span>Once Upon a Page</span>
+                    </a>
+                    <span class="admin-brand-badge">Admin</span>
+                </div>
+
+                <!-- Navigation List -->
+                <ul class="admin-nav-list">
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_dashboard') }}" class="admin-nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_users') }}" class="admin-nav-link {% if active_page == 'users' %}active{% endif %}">
+                            <i class="fa-solid fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_books') }}" class="admin-nav-link {% if active_page == 'books' %}active{% endif %}">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                            <span>Books</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_book_new') }}" class="admin-nav-link {% if active_page == 'new_book' %}active{% endif %}">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Add New Book</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_categories') }}" class="admin-nav-link {% if active_page == 'categories' %}active{% endif %}">
+                            <i class="fa-solid fa-tags"></i>
+                            <span>Categories</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_analytics') }}" class="admin-nav-link {% if active_page == 'analytics' %}active{% endif %}">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Reading Analytics</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_welcome') }}" class="admin-nav-link {% if active_page == 'welcome' %}active{% endif %}">
+                            <i class="fa-solid fa-image"></i>
+                            <span>Welcome Page</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_login_settings') }}" class="admin-nav-link {% if active_page == 'login_settings' %}active{% endif %}">
+                            <i class="fa-solid fa-door-open"></i>
+                            <span>Login Background</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_settings') }}" class="admin-nav-link {% if active_page == 'settings' %}active{% endif %}">
+                            <i class="fa-solid fa-sliders"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item mt-2 pt-2 border-top border-secondary border-opacity-25">
+                        <a href="{{ url_for('dashboard') }}" class="admin-nav-link text-info">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            <span>View Public Site</span>
+                        </a>
+                    </li>
+                    <li class="admin-nav-item">
+                        <a href="{{ url_for('admin_logout') }}" class="admin-nav-link text-danger">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sidebar User Profile Footer -->
+            <div class="admin-sidebar-footer">
+                <div class="admin-user-pill">
+                    <div class="admin-avatar">
+                        {{ current_user.full_name[:1].upper() if current_user.full_name else 'A' }}
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="fw-bold text-white text-truncate small">{{ current_user.full_name }}</div>
+                        <div class="text-muted small text-truncate" style="font-size: 0.75rem;">{{ current_user.email }}</div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================================== -->
+        <!-- Admin Main Content Area                                             -->
+        <!-- =================================================================== -->
+        <div class="admin-main">
+            
+            <!-- Top Bar -->
+            <header class="admin-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-sm btn-outline-secondary d-lg-none" id="adminSidebarToggle" aria-label="Toggle menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h1 class="admin-page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3" target="_blank">
+                        <i class="fa-solid fa-book-open me-1"></i> Public Library
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light border rounded-pill px-3 py-1 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-shield-halved text-primary me-1"></i>
+                            <span>{{ current_user.full_name }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item" href="{{ url_for('admin_settings') }}"><i class="fa-solid fa-gear me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sign Out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Page Content Body -->
+            <main class="admin-content-container">
+                
+                <!-- Flash Notification Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="mb-4">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-3" role="alert">
+                                    <span class="me-2">✨</span>
+                                    <span>{{ message }}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Admin JavaScript -->
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

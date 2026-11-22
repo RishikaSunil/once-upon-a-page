@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Register · Once Upon a Page{% endblock %}
+
+{% block content %}
+<div class="storybook-card shadow-lg">
+
+    <!-- Decorative Top Bookmark Ribbon -->
+    <div class="bookmark-ribbon" title="Magical Bookmark">
+        <span class="ribbon-star">★</span>
+    </div>
+
+    <!-- Registration Header -->
+    <header class="storybook-header text-center">
+        <div class="header-emblem mb-2">
+            <span class="emblem-sparkle left-sparkle">✨</span>
+            <span class="emblem-book">📜</span>
+            <span class="emblem-sparkle right-sparkle">✨</span>
+        </div>
+        <h1 class="storybook-title">Begin Your Story</h1>
+        <p class="storybook-tagline">Create an enchanted chronicle with Once Upon a Page.</p>
+        <div class="vintage-divider">
+            <span class="divider-line"></span>
+            <span class="divider-ornament">✦ ❧ ✦</span>
+            <span class="divider-line"></span>
+        </div>
+    </header>
+
+    <!-- Registration Form -->
+    <form action="{{ url_for('register') }}" method="POST" class="storybook-form mt-4" novalidate id="registerForm">
+        
+        <!-- Full Name Input -->
+        <div class="form-group mb-3">
+            <label for="registerName" class="form-label storybook-label">
+                <i class="fa-solid fa-feather-pointed me-1"></i> Full Name
+            </label>
+            <div class="input-wrapper">
+                <span class="input-icon"><i class="fa-regular fa-user"></i></span>
+                <input 
+                    type="text" 
+                    class="form-control storybook-input" 
+                    id="registerName" 
+                    name="full_name" 
+                    placeholder="Lady Eleanor / Prince Arthur" 
+                    value="{{ full_name or '' }}" 
+                    required 
+                    autocomplete="name">
+            </div>
+        </div>
+
+        <!-- Email Address Input -->
+        <div class="form-group mb-3">
+            <label for="registerEmail" class="form-label storybook-label">
+                <i class="fa-regular fa-envelope me-1"></i> Email Address
+            </label>
+            <div class="input-wrapper">
+                <span class="input-icon"><i class="fa-solid fa-at"></i></span>
+                <input 
+                    type="email" 
+                    class="form-control storybook-input" 
+                    id="registerEmail" 
+                    name="email" 
+                    placeholder="adventurer@fairytale.com" 
+                    value="{{ email or '' }}" 
+                    required 
+                    autocomplete="email">
+            </div>
+        </div>
+
+        <!-- Password Input with Show/Hide Toggle -->
+        <div class="form-group mb-3">
+            <label for="registerPassword" class="form-label storybook-label">
+                <i class="fa-solid fa-lock me-1"></i> Password
+            </label>
+            <div class="input-wrapper">
+                <span class="input-icon"><i class="fa-solid fa-key"></i></span>
+                <input 
+                    type="password" 
+                    class="form-control storybook-input with-toggle" 
+                    id="registerPassword" 
+                    name="password" 
+                    placeholder="At least 6 magical characters" 
+                    required 
+                    minlength="6"
+                    autocomplete="new-password">
+                <button 
+                    type="button" 
+                    class="btn-toggle-password" 
+                    id="toggleRegisterPassword" 
+                    aria-label="Toggle password visibility">
+                    <i class="fa-regular fa-eye" id="registerEyeIcon"></i>
+                </button>
+            </div>
+            <div class="form-hint small mt-1">
+                <i class="fa-solid fa-circle-info me-1"></i> Minimum 6 characters to guard your tale.
+            </div>
+        </div>
+
+        <!-- Confirm Password Input with Show/Hide Toggle -->
+        <div class="form-group mb-4">
+            <label for="registerConfirmPassword" class="form-label storybook-label">
+                <i class="fa-solid fa-shield-halved me-1"></i> Confirm Password
+            </label>
+            <div class="input-wrapper">
+                <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                <input 
+                    type="password" 
+                    class="form-control storybook-input with-toggle" 
+                    id="registerConfirmPassword" 
+                    name="confirm_password" 
+                    placeholder="Repeat your secret passphrase" 
+                    required 
+                    autocomplete="new-password">
+                <button 
+                    type="button" 
+                    class="btn-toggle-password" 
+                    id="toggleConfirmPassword" 
+                    aria-label="Toggle confirm password visibility">
+                    <i class="fa-regular fa-eye" id="confirmEyeIcon"></i>
+                </button>
+            </div>
+            <!-- Dynamic Password Match Indicator -->
+            <div id="passwordMatchFeedback" class="password-match-indicator mt-1 small" style="display: none;"></div>
+        </div>
+
+        <!-- Create Account Button -->
+        <button type="submit" class="btn btn-storybook-primary w-100 mb-3" id="registerSubmitBtn">
+            <span class="btn-shimmer"></span>
+            <span class="btn-content">
+                <i class="fa-solid fa-sparkles me-2"></i> Create Account
+            </span>
+        </button>
+
+        <!-- Link to Login -->
+        <div class="text-center mt-3 pt-2 border-top border-pastel">
+            <p class="switch-auth-text mb-0">
+                Already part of our story? 
+                <a href="{{ url_for('login') }}" class="storybook-link fw-semibold">Return to Sign In ✦</a>
+            </p>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

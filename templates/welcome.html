@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to a World of Little Stories · Once Upon a Page</title>
+
+    <!-- Google Fonts: Cinzel Decorative, Playfair Display, Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Custom Storybook CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Immediate Theme & Atmosphere Hydration (Zero Flash) -->
+    <script>
+        (function() {
+            try {
+                window.USER_PREFS = {{ user_preferences|tojson|safe if user_preferences else '{}' }};
+                var savedTheme = localStorage.getItem('storybook_theme') || (window.USER_PREFS && window.USER_PREFS.theme) || 'light';
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+                var savedNightSky = localStorage.getItem('storybook_night_sky');
+                if (savedNightSky === 'false' || (savedNightSky === null && window.USER_PREFS && window.USER_PREFS.night_sky === false)) {
+                    document.documentElement.setAttribute('data-night-sky', 'false');
+                } else {
+                    document.documentElement.setAttribute('data-night-sky', 'true');
+                }
+            } catch(e) {}
+        })();
+    </script>
+</head>
+<body class="welcome-fullscreen-body {% if user_preferences and user_preferences.theme == 'dark' %}dark-theme{% endif %} {% if user_preferences and not user_preferences.night_sky %}night-sky-disabled{% endif %}">
+
+    <!-- Full-Screen Cozy Bedtime Background (100vw x 100vh) -->
+    <div class="welcome-fullscreen-bg" aria-hidden="true">
+        {% if welcome_settings and welcome_settings.welcome_bg_type == 'video' and welcome_settings.welcome_bg_video %}
+            <!-- Full-Screen Looping Video with Original Audio (No image poster or fallback img to prevent flashing old image) -->
+            <video 
+                id="welcomeBgVideo" 
+                class="welcome-bg-video" 
+                autoplay 
+                loop 
+                playsinline 
+                preload="auto">
+                <source src="{{ media_url(welcome_settings.welcome_bg_video) }}" type="video/mp4">
+                <source src="{{ media_url(welcome_settings.welcome_bg_video) }}" type="video/webm">
+                <source src="{{ media_url(welcome_settings.welcome_bg_video) }}" type="video/quicktime">
+            </video>
+        {% elif welcome_settings and welcome_settings.welcome_bg_type == 'plain' %}
+            <!-- Plain Deep Night Bedtime Background -->
+            <div class="welcome-bg-plain"></div>
+        {% else %}
+            <!-- Full-Screen Illustration Background -->
+            <div class="welcome-bg-image-container">
+                <img 
+                    src="{{ media_url(welcome_settings.welcome_bg_image if welcome_settings and welcome_settings.welcome_bg_image else 'images/welcome_bg.jpg') }}" 
+                    alt="Little girl reading storybook under blanket with bunny and teddy bear" 
+                    class="welcome-bg-img">
+            </div>
+        {% endif %}
+        <!-- Dreamy gradient atmosphere overlay -->
+        <div class="welcome-vignette-overlay"></div>
+    </div>
+
+    <!-- Floating Background Magical Sparkles & Fairy Dust -->
+    <div class="magical-sky" aria-hidden="true">
+        <span class="celestial star star-1">✦</span>
+        <span class="celestial star star-2">✧</span>
+        <span class="celestial star star-3">✦</span>
+        <span class="celestial star star-4">✧</span>
+        <span class="celestial sparkle sparkle-1">✨</span>
+        <span class="celestial sparkle sparkle-2">✨</span>
+    </div>
+
+    <!-- Quiet Top Corner Controls -->
+    <header class="welcome-top-controls d-flex justify-content-between align-items-center px-4 py-3">
+        <div class="welcome-brand-mark d-flex align-items-center gap-2">
+            <span class="fs-4">📖</span>
+            <span class="brand-text-logo text-white">Once Upon a Page</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 gap-sm-3">
+            {% if welcome_settings and welcome_settings.welcome_bg_type == 'video' and welcome_settings.welcome_bg_video %}
+                <!-- Sound / Audio Control for Background Video -->
+                <div class="welcome-sound-control-group d-flex align-items-center gap-2" id="welcomeSoundGroup">
+                    <button type="button" id="welcomeSoundToggle" class="welcome-sound-btn" title="Toggle audio" aria-label="Toggle background video audio">
+                        <i id="welcomeSoundIcon" class="fa-solid fa-volume-high"></i>
+                        <span id="welcomeSoundText" class="d-none d-sm-inline">Sound On</span>
+                    </button>
+                    <div class="welcome-volume-slider-wrapper d-none d-md-flex align-items-center" title="Adjust Volume">
+                        <input type="range" id="welcomeVolumeSlider" class="welcome-volume-slider" min="0" max="1" step="0.05" value="1" aria-label="Volume slider">
+                    </div>
+                </div>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="welcome-quiet-logout" title="Log out">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Log out
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content Over the Background: ONLY Specified Content -->
+    <main class="welcome-fullscreen-main d-flex align-items-center justify-content-center">
+        <div class="welcome-focused-content text-center px-3">
+
+            <!-- Decorative Symbol -->
+            <div class="welcome-deco-symbol mb-2" aria-hidden="true">✦</div>
+
+            <!-- Label -->
+            <div class="welcome-cozy-label mb-3">
+                {{ welcome_settings.welcome_label if welcome_settings and welcome_settings.welcome_label else 'Cozy Bedtime Stories' }}
+            </div>
+
+            <!-- Main Heading -->
+            <h1 class="welcome-fullscreen-heading mb-3">
+                {{ welcome_settings.welcome_heading if welcome_settings and welcome_settings.welcome_heading else 'Welcome to a World of Little Stories' }}
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="welcome-fullscreen-subtitle mb-4">
+                {{ welcome_settings.welcome_subtitle if welcome_settings and welcome_settings.welcome_subtitle else "Every little story holds a little magic. Come, let's explore!" }}
+            </p>
+
+            <!-- Decorative Divider -->
+            <div class="welcome-deco-divider mb-4" aria-hidden="true">
+                <span class="divider-line"></span>
+                <span class="divider-ornament">✦ ❧ ✦</span>
+                <span class="divider-line"></span>
+            </div>
+
+            <!-- Main Button -->
+            <div class="welcome-btn-wrapper">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-enter-story-world" id="enterDashboardBtn">
+                    <span class="btn-glow-aura"></span>
+                    <span class="btn-shimmer-pass"></span>
+                    <span class="btn-inner-content">
+                        {{ welcome_settings.welcome_button_text if welcome_settings and welcome_settings.welcome_button_text else 'Enter the Story World ✨' }}
+                    </span>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Welcome Background Video Audio & Playback Controller -->
+    {% if welcome_settings and welcome_settings.welcome_bg_type == 'video' and welcome_settings.welcome_bg_video %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const video = document.getElementById('welcomeBgVideo');
+        const soundToggle = document.getElementById('welcomeSoundToggle');
+        const soundIcon = document.getElementById('welcomeSoundIcon');
+        const soundText = document.getElementById('welcomeSoundText');
+        const volumeSlider = document.getElementById('welcomeVolumeSlider');
+
+        if (!video) return;
+
+        // Smooth video reveal once data is ready (eliminates any flicker/flash)
+        function markVideoReady() {
+            video.classList.add('video-ready');
+        }
+        if (video.readyState >= 2) {
+            markVideoReady();
+        } else {
+            video.addEventListener('loadeddata', markVideoReady, { once: true });
+            video.addEventListener('canplay', markVideoReady, { once: true });
+            video.addEventListener('playing', markVideoReady, { once: true });
+        }
+
+        // Set initial sound state (unmuted, full volume)
+        video.volume = volumeSlider ? parseFloat(volumeSlider.value) : 1.0;
+        video.muted = false;
+
+        function setSoundUI(active, promptUser) {
+            if (!soundToggle) return;
+            if (active) {
+                if (soundIcon) soundIcon.className = 'fa-solid fa-volume-high';
+                if (soundText) soundText.textContent = 'Sound On';
+                soundToggle.classList.remove('sound-prompt-pulse');
+                soundToggle.setAttribute('title', 'Mute audio');
+                soundToggle.setAttribute('aria-pressed', 'true');
+            } else {
+                if (soundIcon) soundIcon.className = 'fa-solid fa-volume-xmark';
+                if (soundText) soundText.textContent = promptUser ? 'Enable Sound 🔊' : 'Sound Muted';
+                if (promptUser) {
+                    soundToggle.classList.add('sound-prompt-pulse');
+                } else {
+                    soundToggle.classList.remove('sound-prompt-pulse');
+                }
+                soundToggle.setAttribute('title', 'Unmute audio');
+                soundToggle.setAttribute('aria-pressed', 'false');
+            }
+        }
+
+        // Attempt autoplay with audio
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                // Autoplay with audio succeeded!
+                setSoundUI(!video.muted, false);
+            }).catch((err) => {
+                // Autoplay with sound prevented by browser policy
+                console.log('Autoplay with audio blocked by browser policy. Playing muted until visitor interaction.');
+                video.muted = true;
+                video.play().catch(() => {});
+                setSoundUI(false, true);
+            });
+        }
+
+        // Toggle sound button click
+        if (soundToggle) {
+            soundToggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (video.muted || video.volume === 0) {
+                    video.muted = false;
+                    if (video.volume === 0) {
+                        video.volume = 1.0;
+                        if (volumeSlider) volumeSlider.value = 1.0;
+                    }
+                    if (video.paused) video.play().catch(() => {});
+                    setSoundUI(true, false);
+                } else {
+                    video.muted = true;
+                    setSoundUI(false, false);
+                }
+            });
+        }
+
+        // Volume slider handler
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', function (e) {
+                e.stopPropagation();
+                const val = parseFloat(this.value);
+                video.volume = val;
+                if (val === 0) {
+                    video.muted = true;
+                    setSoundUI(false, false);
+                } else {
+                    video.muted = false;
+                    if (video.paused) video.play().catch(() => {});
+                    setSoundUI(true, false);
+                }
+            });
+        }
+
+        // Unmute on first user interaction anywhere if muted due to browser policy
+        function handleFirstInteraction() {
+            if (video && video.muted && soundToggle && soundToggle.classList.contains('sound-prompt-pulse')) {
+                video.muted = false;
+                video.volume = volumeSlider ? parseFloat(volumeSlider.value) : 1.0;
+                if (video.paused) video.play().catch(() => {});
+                setSoundUI(true, false);
+            }
+            document.removeEventListener('click', handleFirstInteraction);
+            document.removeEventListener('keydown', handleFirstInteraction);
+        }
+        document.addEventListener('click', handleFirstInteraction);
+        document.addEventListener('keydown', handleFirstInteraction);
+    });
+    </script>
+    {% endif %}
+
+</body>
+</html>

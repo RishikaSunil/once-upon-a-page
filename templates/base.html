@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Once Upon a Page{% endblock %}</title>
+
+    <!-- Google Fonts: Cinzel Decorative, Playfair Display, Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Custom Storybook CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Immediate Theme & Atmosphere Hydration (Zero Flash) -->
+    <script>
+        (function() {
+            try {
+                window.USER_PREFS = {{ user_preferences|tojson|safe if user_preferences else '{}' }};
+                var savedTheme = localStorage.getItem('storybook_theme') || (window.USER_PREFS && window.USER_PREFS.theme) || 'light';
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+                var savedNightSky = localStorage.getItem('storybook_night_sky');
+                if (savedNightSky === 'false' || (savedNightSky === null && window.USER_PREFS && window.USER_PREFS.night_sky === false)) {
+                    document.documentElement.setAttribute('data-night-sky', 'false');
+                } else {
+                    document.documentElement.setAttribute('data-night-sky', 'true');
+                }
+            } catch(e) {}
+        })();
+    </script>
+</head>
+<body class="storybook-body {% if user_preferences and user_preferences.theme == 'dark' %}dark-theme{% endif %} {% if user_preferences and not user_preferences.night_sky %}night-sky-disabled{% endif %} {% block body_extra_class %}{% endblock %}">
+
+    <!-- Background Media Block (e.g., custom Image or Video background) -->
+    {% block background_media %}{% endblock %}
+
+    <!-- Floating Background Magical Elements (Stars, Moons, Sparkles, Books) -->
+    <div class="magical-sky" aria-hidden="true">
+        <span class="celestial star star-1">✦</span>
+        <span class="celestial star star-2">✧</span>
+        <span class="celestial star star-3">✦</span>
+        <span class="celestial star star-4">✧</span>
+        <span class="celestial star star-5">✦</span>
+        <span class="celestial star star-6">✧</span>
+        <span class="celestial moon">🌙</span>
+        <span class="celestial tiny-book book-1">📖</span>
+        <span class="celestial tiny-book book-2">📚</span>
+        <span class="celestial sparkle sparkle-1">✨</span>
+        <span class="celestial sparkle sparkle-2">✨</span>
+        <span class="celestial sparkle sparkle-3">✨</span>
+    </div>
+
+    <!-- Main Container -->
+    <main class="page-container d-flex align-items-center justify-content-center min-vh-100 py-4 px-3">
+        <div class="{% block wrapper_class %}storybook-wrapper{% endblock %}">
+            
+            <!-- Flash Notification Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-container mb-3">
+                        {% for category, message in messages %}
+                            <div class="alert storybook-alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                                <span class="alert-icon me-2">
+                                    {% if category == 'success' %}✨
+                                    {% elif category == 'danger' %}🪄
+                                    {% elif category == 'warning' %}📜
+                                    {% else %}🌟{% endif %}
+                                </span>
+                                <span class="alert-text">{{ message }}</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Page Content Block -->
+            {% block content %}{% endblock %}
+
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Custom Storybook Script -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

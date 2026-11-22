@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if current_view == 'favorites' %}Favorites · Once Upon a Page
+        {% elif current_view == 'history' %}Reading History · Once Upon a Page
+        {% else %}Storybook Library · Once Upon a Page{% endif %}
+    </title>
+
+    <!-- Google Fonts: Cinzel Decorative, Playfair Display, Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Custom Storybook Styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Immediate Theme & Atmosphere Hydration (Zero Flash) -->
+    <script>
+        (function() {
+            try {
+                window.USER_PREFS = {{ user_preferences|tojson|safe if user_preferences else '{}' }};
+                var savedTheme = localStorage.getItem('storybook_theme') || (window.USER_PREFS && window.USER_PREFS.theme) || 'light';
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+                var savedNightSky = localStorage.getItem('storybook_night_sky');
+                if (savedNightSky === 'false' || (savedNightSky === null && window.USER_PREFS && window.USER_PREFS.night_sky === false)) {
+                    document.documentElement.setAttribute('data-night-sky', 'false');
+                } else {
+                    document.documentElement.setAttribute('data-night-sky', 'true');
+                }
+            } catch(e) {}
+        })();
+    </script>
+</head>
+<body class="dashboard-body {% if user_preferences and user_preferences.theme == 'dark' %}dark-theme{% endif %} {% if user_preferences and not user_preferences.night_sky %}night-sky-disabled{% endif %}">
+
+    <!-- Top Navigation Bar (Preserving Website Identity) -->
+    <header class="dashboard-navbar d-flex align-items-center justify-content-between px-4 py-2 sticky-top">
+        
+        <!-- Left: Website Brand -->
+        <div class="nav-brand-container d-flex align-items-center gap-2">
+            <button class="btn btn-sidebar-toggle d-lg-none me-1" id="sidebarToggle" aria-label="Toggle navigation menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="nav-brand-link d-flex align-items-center gap-2 text-decoration-none">
+                <span class="brand-open-book-icon">📖</span>
+                <span class="brand-text-logo">Once Upon a Page</span>
+            </a>
+        </div>
+
+        <!-- Center: Primary Nav Links -->
+        <nav class="nav-center-menu d-none d-md-flex align-items-center gap-2">
+            <a href="{{ url_for('welcome') }}" class="nav-pill-item">
+                <i class="fa-solid fa-house me-1"></i> Home
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="nav-pill-item {% if current_view == 'library' %}active{% endif %}">
+                <i class="fa-solid fa-book-bookmark me-1"></i> My Books
+            </a>
+            <a href="{{ url_for('dashboard', view='favorites') }}" class="nav-pill-item {% if current_view == 'favorites' %}active{% endif %}">
+                <i class="fa-solid fa-heart me-1"></i> Favorites
+                {% if total_favorites > 0 %}
+                    <span class="badge bg-danger rounded-pill ms-1 fav-count-badge">{{ total_favorites }}</span>
+                {% endif %}
+            </a>
+        </nav>
+
+        <!-- Right: Notifications & User Profile -->
+        <div class="nav-user-actions d-flex align-items-center gap-2 gap-sm-3">
+            
+            <!-- Quick Theme Toggle: Light / Dark Mode -->
+            <button class="btn-nav-icon" id="themeToggleBtn" title="Switch to Dark Mode" aria-label="Toggle Light or Dark Mode">
+                <i class="fa-solid fa-moon" id="themeToggleIcon"></i>
+            </button>
+
+            <!-- Notification Bell with Alert Dot -->
+            <div class="notification-wrapper position-relative">
+                <button class="btn-nav-icon" id="notificationBtn" title="Magical Notifications" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end storybook-dropdown shadow-sm" aria-labelledby="notificationBtn">
+                    <li class="dropdown-header fw-bold text-pastel-dark">✨ Whispering Scrolls</li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="px-3 py-2 small">
+                        <strong class="text-lavender-deep">Twinkle is available!</strong><br>
+                        <span class="text-muted">Turn the enchanted pages of our first bedtime storybook.</span>
+                    </li>
+                    <li class="px-3 py-2 small">
+                        <strong class="text-lavender-deep">Reading Progress:</strong><br>
+                        <span class="text-muted">Your bookmarks are automatically saved to your chronicle.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- User Profile Avatar & Dropdown -->
+            <div class="user-profile-wrapper dropdown">
+                <button class="btn-profile-pill d-flex align-items-center gap-2" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="avatar-circle">
+                        <span>{{ current_user.full_name[:1].upper() }}</span>
+                    </div>
+                    <span class="user-display-name d-none d-sm-inline">{{ current_user.full_name }}</span>
+                    <i class="fa-solid fa-chevron-down small chevron-icon"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end storybook-dropdown shadow-sm" aria-labelledby="profileDropdown">
+                    <li class="px-3 py-2 text-center border-bottom border-pastel">
+                        <div class="avatar-circle mx-auto mb-2">{{ current_user.full_name[:1].upper() }}</div>
+                        <div class="fw-bold">{{ current_user.full_name }}</div>
+                        <div class="small text-muted">{{ current_user.email }}</div>
+                    </li>
+                    <li><a class="dropdown-item py-2" href="{{ url_for('welcome') }}"><i class="fa-solid fa-moon me-2"></i>Bedtime Welcome</a></li>
+                    <li><a class="dropdown-item py-2" href="{{ url_for('dashboard', view='favorites') }}"><i class="fa-solid fa-heart me-2 text-danger"></i>My Favorites</a></li>
+                    <li><a class="dropdown-item py-2" href="{{ url_for('dashboard', view='history') }}"><i class="fa-solid fa-clock-rotate-left me-2"></i>Reading History</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item py-2 text-danger" href="{{ url_for('logout') }}">
+                            <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Log out
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- Main Dashboard Body with Sidebar + Content -->
+    <div class="dashboard-main-container d-flex">
+        
+        <!-- Left Sidebar Navigation (All Books REMOVED as requested) -->
+        <aside class="dashboard-sidebar d-flex flex-column justify-content-between p-3" id="dashboardSidebar">
+            
+            <div class="sidebar-top-section">
+                <!-- Navigation Links List: Dashboard, Favorites, Reading History, Settings, Logout -->
+                <nav class="sidebar-nav d-flex flex-column gap-1">
+                    <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if current_view == 'library' %}active{% endif %}">
+                        <i class="fa-solid fa-house-chimney link-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    
+                    <a href="{{ url_for('dashboard', view='favorites') }}" class="sidebar-link {% if current_view == 'favorites' %}active{% endif %}">
+                        <i class="fa-solid fa-heart link-icon"></i>
+                        <span>Favorites</span>
+                    </a>
+                    
+                    <a href="{{ url_for('dashboard', view='history') }}" class="sidebar-link {% if current_view == 'history' %}active{% endif %}">
+                        <i class="fa-regular fa-clock link-icon"></i>
+                        <span>Reading History</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Lower Section: Settings & Logout + Floral Corner Decor -->
+            <div class="sidebar-bottom-section">
+                <nav class="sidebar-nav d-flex flex-column gap-1 mb-3">
+                    <a href="#settings" class="sidebar-link" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                        <i class="fa-solid fa-gear link-icon"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="sidebar-link logout-link text-danger">
+                        <i class="fa-solid fa-arrow-right-from-bracket link-icon"></i>
+                        <span>Logout</span>
+                    </a>
+                </nav>
+
+                
+            </div>
+
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="dashboard-content-area flex-grow-1 p-3 p-md-4">
+            
+            <!-- Flash Notification Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-container mb-3">
+                        {% for category, message in messages %}
+                            <div class="alert storybook-alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                                <span class="alert-icon me-2">✨</span>
+                                <span class="alert-text">{{ message }}</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Top Panoramic Welcome Banner -->
+            <section class="dashboard-welcome-banner mb-4 shadow-sm position-relative overflow-hidden">
+                <div class="row align-items-center g-0">
+                    
+                    <!-- Left: Personalized Text Greeting -->
+                    <div class="col-md-7 p-4 p-lg-5 banner-text-col">
+                        <div class="banner-greeting-badge mb-2">
+                            <span>✨ Magical Reading Portal</span>
+                        </div>
+                        <h2 class="banner-user-heading mb-2">
+                            Hello, {{ current_user.full_name }}! 👋
+                        </h2>
+                        <p class="banner-user-subtitle mb-0">
+                            Explore your favourite little stories.
+                        </p>
+                    </div>
+
+                    <!-- Right: Storybook Illustration (Reading girl, white cat, books & stars) -->
+                    <div class="col-md-5 d-none d-md-flex justify-content-end align-items-center banner-art-col">
+                        <img 
+                            src="{{ url_for('static', filename='images/banner_illustration.jpg') }}" 
+                            alt="Girl reading under clouds with kitten" 
+                            class="banner-illustration-image">
+                    </div>
+
+                </div>
+
+                <div class="banner-star-accent" aria-hidden="true">⭐</div>
+            </section>
+
+
+            <!-- VIEW 1: READING HISTORY VIEW -->
+            {% if current_view == 'history' %}
+            <section class="reading-history-section">
+                <div class="shelf-header d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="shelf-emoji-book">🕯️</span>
+                        <h3 class="shelf-title mb-0">Reading History</h3>
+                        <span class="shelf-count-badge ms-2">{{ reading_history_items|length }} chronicled</span>
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="view-all-link">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Back to All Books
+                    </a>
+                </div>
+
+                {% if reading_history_items %}
+                    <div class="row g-4">
+                        {% for item in reading_history_items %}
+                        <div class="col-12 col-md-6 col-xl-4">
+                            <div class="history-card p-3 rounded-4 shadow-sm d-flex gap-3 align-items-center">
+                                
+                                <!-- Miniature 3D Book Cover -->
+                                <div class="history-book-cover-box">
+                                    <img 
+                                        src="{{ url_for('static', filename=item.book.cover) }}" 
+                                        alt="{{ item.book.title }}" 
+                                        class="history-cover-img">
+                                </div>
+
+                                <!-- Progress & Details -->
+                                <div class="history-info flex-grow-1">
+                                    <span class="badge bg-pastel-lavender text-lavender-deep mb-1 small">{{ item.book.category }}</span>
+                                    <h5 class="history-title mb-1 fw-bold">{{ item.book.title }}</h5>
+                                    <div class="small text-muted mb-2">
+                                        <i class="fa-regular fa-clock me-1"></i>Last read: <strong>{{ item.last_opened_formatted }}</strong>
+                                    </div>
+
+                                    <!-- Progress Bar -->
+                                    <div class="progress mb-2 history-progress-bar" style="height: 8px;">
+                                        <div class="progress-bar bg-lavender-gradient" role="progressbar" style="width: {{ item.percent }}%;" aria-valuenow="{{ item.percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="small text-muted fw-semibold">Page {{ item.last_read_page }} of {{ item.total_pages }}</span>
+                                        
+                                        <!-- Continue Reading Button -->
+                                        <a href="{{ url_for('reader', book_identifier=item.book.slug or item.book.id) }}" class="btn btn-sm btn-continue-reading">
+                                            Continue Reading <i class="fa-solid fa-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Empty State for Reading History -->
+                    <div class="empty-state-card text-center p-5 rounded-4 shadow-sm my-4">
+                        <div class="empty-emoji mb-3">🕯️📜</div>
+                        <h4 class="fw-bold mb-2">Your reading journey starts here!</h4>
+                        <p class="text-muted mb-4">Open a storybook and it will appear here. ✨</p>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-storybook-primary px-4 py-2">
+                            <span class="btn-content">Browse Story Books</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </section>
+
+
+            <!-- VIEW 2: FAVORITES VIEW -->
+            {% elif current_view == 'favorites' %}
+            <section class="storybook-shelf-section">
+                <div class="shelf-header d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="shelf-emoji-book">💖</span>
+                        <h3 class="shelf-title mb-0">My Favorite Stories</h3>
+                        <span class="shelf-count-badge ms-2" id="favShelfCount">{{ books|length }} saved</span>
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="view-all-link">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Back to All Books
+                    </a>
+                </div>
+
+                {% if books %}
+                    <div class="books-3d-shelf-grid" id="favoritesGrid">
+                        {% for book in books %}
+                        <div class="book-shelf-column" id="favCol-{{ book.id }}">
+                            <div class="book-3d-container" data-book-id="{{ book.id }}" data-book-title="{{ book.title }}" data-book-url="{{ url_for('reader', book_identifier=book.slug or book.id) }}">
+                                
+                                <div class="book-3d-interactive-anchor">
+                                    <a href="{{ url_for('reader', book_identifier=book.slug or book.id) }}" class="book-3d-anchor-link text-decoration-none" aria-label="Open {{ book.title }}">
+                                        <div class="book-3d-viewport">
+                                            
+                                            <!-- Standing 3D Book -->
+                                            <div class="book-3d-object">
+                                                
+                                                <!-- Spine -->
+                                                <div class="book-spine">
+                                                    <div class="spine-emboss-ribs"></div>
+                                                    <span class="spine-vertical-text">{{ book.title }}</span>
+                                                    <span class="spine-bottom-star">✦</span>
+                                                </div>
+
+                                                <!-- Front Cover with Fitted Official Artwork -->
+                                                <div class="book-cover-front">
+                                                    <img 
+                                                        src="{{ url_for('static', filename=book.cover) }}" 
+                                                        alt="{{ book.title }} Cover" 
+                                                        class="book-cover-artwork"
+                                                        loading="lazy">
+
+                                                    <div class="book-spine-crease"></div>
+                                                    <div class="book-cover-sheen"></div>
+                                                    <div class="book-glow-border"></div>
+
+                                                    <!-- Interactive Favorite Heart Button -->
+                                                    <button 
+                                                        type="button" 
+                                                        class="btn-fav-toggle is-favorited" 
+                                                        data-book-id="{{ book.id }}" 
+                                                        title="Remove from favorites"
+                                                        onclick="toggleFavorite(event, {{ book.id }})">
+                                                        <i class="fa-solid fa-heart text-danger"></i>
+                                                    </button>
+                                                </div>
+
+                                                <div class="book-pages-right"></div>
+                                                <div class="book-pages-bottom"></div>
+                                                <div class="book-cover-back"></div>
+                                            </div>
+
+                                            <div class="book-ground-shadow"></div>
+                                        </div>
+                                    </a>
+
+                                    <!-- Book Metadata -->
+                                    <div class="book-meta-content text-center mt-3">
+                                        <span class="book-category-pill mb-1 d-inline-block">{{ book.category }}</span>
+                                        <h4 class="book-card-title">
+                                            <a href="{{ url_for('reader', book_identifier=book.slug or book.id) }}" class="text-decoration-none book-title-link">
+                                                {{ book.title }}
+                                            </a>
+                                        </h4>
+                                        <a href="{{ url_for('reader', book_identifier=book.slug or book.id) }}" class="btn btn-sm btn-open-book-pill mt-1">
+                                            Read Story ✨
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Exact required Empty State for Favorites -->
+                    <div class="empty-state-card text-center p-5 rounded-4 shadow-sm my-4" id="emptyFavCard">
+                        <div class="empty-emoji mb-3">💜 📚</div>
+                        <h4 class="fw-bold mb-2">No favourite stories yet!</h4>
+                        <p class="text-muted mb-4">Start exploring and save the stories you love. 💜</p>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-storybook-primary px-4 py-2">
+                            <span class="btn-content">Discover Storybooks</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </section>
+
+
+            <!-- VIEW 3: MAIN LIBRARY VIEW (ALL BOOKS) -->
+            {% else %}
+            <section class="storybook-shelf-section">
+                <div class="shelf-header d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="shelf-emoji-book">📖</span>
+                        <h3 class="shelf-title mb-0">Story Books 📚</h3>
+                        <span class="shelf-count-badge ms-2">{{ books|length }} tales</span>
+                    </div>
+
+                    <div class="shelf-actions d-flex align-items-center gap-2">
+                        <a href="{{ url_for('dashboard', view='favorites') }}" class="view-all-link">
+                            View Favorites <i class="fa-solid fa-heart text-danger ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Realistic 3D Books Standing Grid -->
+                <div class="books-3d-shelf-grid">
+                    
+                    {% for book in books %}
+                    <div class="book-shelf-column">
+                        
+                        <div class="book-3d-container" data-book-id="{{ book.id }}" data-book-title="{{ book.title }}" data-book-url="{{ url_for('reader', book_identifier=book.slug or book.id) }}">
+                            
+                            <div class="book-3d-interactive-anchor">
+                                <a href="{{ url_for('reader', book_identifier=book.slug or book.id) }}" class="book-3d-anchor-link text-decoration-none" aria-label="Open {{ book.title }}">
+                                    <div class="book-3d-viewport">
+                                        
+                                        <!-- The Standing 3D Book -->
+                                        <div class="book-3d-object">
+                                            
+                                            <!-- Left Spine (Authentic rounded 3D book spine) -->
+                                            <div class="book-spine">
+                                                <div class="spine-emboss-ribs"></div>
+                                                <span class="spine-vertical-text">{{ book.title }}</span>
+                                                <span class="spine-bottom-star">✦</span>
+                                            </div>
+
+                                            <!-- Front Cover with Fitted Official Cover Artwork -->
+                                            <div class="book-cover-front">
+                                                
+                                                <!-- Cover Image (Fitted without cropping or distortion) -->
+                                                <img 
+                                                    src="{{ url_for('static', filename=book.cover) }}" 
+                                                    alt="{{ book.title }} Cover" 
+                                                    class="book-cover-artwork"
+                                                    loading="lazy">
+
+                                                <!-- Spine Crease & Hinge Shadow -->
+                                                <div class="book-spine-crease"></div>
+
+                                                <!-- Specular Gloss & Light Reflection Sheen -->
+                                                <div class="book-cover-sheen"></div>
+
+                                                <!-- Soft Magical Glowing Border -->
+                                                <div class="book-glow-border"></div>
+
+                                                <!-- Interactive Favorite Heart Toggle Button -->
+                                                <button 
+                                                    type="button" 
+                                                    class="btn-fav-toggle {% if book.is_favorite %}is-favorited{% endif %}" 
+                                                    data-book-id="{{ book.id }}" 
+                                                    title="{% if book.is_favorite %}Remove from favorites{% else %}Add to favorites{% endif %}"
+                                                    onclick="toggleFavorite(event, {{ book.id }})">
+                                                    <i class="{% if book.is_favorite %}fa-solid fa-heart text-danger{% else %}fa-regular fa-heart{% endif %}"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Right Page Block (3D stacked paper sheets) -->
+                                            <div class="book-pages-right"></div>
+
+                                            <!-- Bottom Page Block (3D bottom paper edges) -->
+                                            <div class="book-pages-bottom"></div>
+
+                                            <!-- Back Hardcover -->
+                                            <div class="book-cover-back"></div>
+
+                                        </div>
+
+                                        <!-- Soft Realistic Contact & Floor Shadow -->
+                                        <div class="book-ground-shadow"></div>
+
+                                    </div>
+                                </a>
+
+                                <!-- Book Info Metadata -->
+                                <div class="book-meta-content text-center mt-3">
+                                    <span class="book-category-pill mb-1 d-inline-block">{{ book.category }}</span>
+                                    <h4 class="book-card-title">
+                                        <a href="{{ url_for('reader', book_identifier=book.slug or book.id) }}" class="text-decoration-none book-title-link">
+                                            {{ book.title }}
+                                        </a>
+                                    </h4>
+                                    <div class="book-quick-stats small text-muted mb-2">
+                                        <span><i class="fa-regular fa-clock me-1"></i>{{ book.duration }}</span>
+                                        <span class="mx-1">·</span>
+                                        <span><i class="fa-solid fa-star text-warning me-1"></i>{{ book.rating }}</span>
+                                    </div>
+                                    <a href="{{ url_for('reader', book_identifier=book.slug or book.id) }}" class="btn btn-sm btn-open-book-pill">
+                                        Open Storybook ✨
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+            </section>
+            {% endif %}
+
+        </main>
+
+    </div>
+
+    <!-- Modals for Settings -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content storybook-modal-card">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title storybook-title-sm">⚙️ Reading Preferences</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Night Sky Atmosphere</span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="ambientToggle" {% if user_preferences is not defined or user_preferences.night_sky %}checked{% endif %}>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Page Turn Whispers</span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="soundToggle" {% if user_preferences is not defined or user_preferences.page_turn_whispers %}checked{% endif %}>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast for Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+        <div id="magicalToast" class="toast storybook-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex align-items-center">
+                <span class="toast-icon me-2" id="toastIcon">✨</span>
+                <span id="toastMsg">Action recorded in your chronicle.</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Script -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

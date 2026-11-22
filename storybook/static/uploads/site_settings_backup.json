@@ -1,0 +1,12 @@
+{
+  "welcome_label": "Cozy Bedtime Stories",
+  "welcome_heading": "Welcome to a World of Little Stories",
+  "welcome_subtitle": "Every little story holds a little magic. Come, let's explore!",
+  "welcome_button_text": "Enter the Story World \u2728",
+  "welcome_bg_type": "video",
+  "welcome_bg_image": "uploads/welcome/9047303ef0_Magical_Childrens_Stories_That.jpg",
+  "welcome_bg_video": "uploads/welcome/819d6f2f67_gemini_generated_video_df5bd85.mp4",
+  "login_bg_type": "plain",
+  "login_bg_image": "uploads/login/bcec4fc42c_test_login_fairy.png",
+  "login_bg_video": "uploads/login/dbc73588b0_gemini_generated_video_b860dc8.mp4"
+}

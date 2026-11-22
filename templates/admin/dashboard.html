@@ -1,0 +1,300 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard Overview{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<!-- Quick Stat Counters Row -->
+<div class="row g-3 mb-4">
+    <!-- Total Registered Users -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrapper stat-icon-purple">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ stats.total_users }}</div>
+                <div class="stat-label">Registered Readers</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Published Books -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrapper stat-icon-green">
+                <i class="fa-solid fa-book-bookmark"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ stats.total_published }}</div>
+                <div class="stat-label">Published Tales</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Draft Books -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrapper stat-icon-amber">
+                <i class="fa-solid fa-feather-pointed"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ stats.total_drafts }}</div>
+                <div class="stat-label">Draft Storybooks</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reading Sessions -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrapper stat-icon-blue">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ stats.total_sessions }}</div>
+                <div class="stat-label">Reading Sessions</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Most Popular Story Spotlight Banner -->
+{% if stats.most_popular_book %}
+<div class="admin-card p-4 mb-4 bg-white border-start border-4 border-primary">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="fs-1 text-warning">⭐</div>
+            <div>
+                <span class="badge bg-pastel-lavender text-lavender-deep fw-bold mb-1">Most Popular Storybook</span>
+                <h4 class="mb-0 fw-bold">{{ stats.most_popular_book.title }}</h4>
+                <div class="small text-muted">
+                    <span>{{ stats.most_popular_book.reader_count }} readers</span> · 
+                    <span>{{ stats.most_popular_book.fav_count }} favorites</span> · 
+                    <span>{{ stats.most_popular_book.category }}</span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <a href="{{ url_for('admin_book_edit', book_id=stats.most_popular_book.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 me-2">
+                <i class="fa-solid fa-pen-to-square me-1"></i> Edit Book
+            </a>
+            <a href="{{ url_for('admin_book_preview', book_id=stats.most_popular_book.id) }}" class="btn btn-sm btn-admin-primary rounded-pill px-3" target="_blank">
+                <i class="fa-solid fa-eye me-1"></i> Preview Reader
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Reading Sessions Chart -->
+    <div class="col-12 col-lg-8">
+        <div class="admin-card h-100 mb-0">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">📈 Reader Activity (Recent Days)</h3>
+                <span class="badge bg-light text-muted border">Daily Reading Sessions</span>
+            </div>
+            <div style="height: 260px;">
+                <canvas id="sessionsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Distribution Doughnut -->
+    <div class="col-12 col-lg-4">
+        <div class="admin-card h-100 mb-0">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">📚 Category Breakdown</h3>
+            </div>
+            <div style="height: 260px; position: relative;">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tables Row: Recent Users & Recently Added Books -->
+<div class="row g-4">
+    <!-- Recent Users -->
+    <div class="col-12 col-lg-6">
+        <div class="admin-card h-100 mb-0">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">👥 Recent Readers</h3>
+                <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Reader</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in recent_users %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="admin-avatar" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                        {{ u.full_name[:1].upper() if u.full_name else 'U' }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ u.full_name }}</div>
+                                        <div class="small text-muted">{{ u.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {% if u.role == 'admin' %}bg-warning text-dark{% else %}bg-secondary text-white{% endif %} rounded-pill">
+                                    {{ u.role }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if u.is_active %}
+                                    <span class="badge-status badge-status-active">Active</span>
+                                {% else %}
+                                    <span class="badge-status badge-status-inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td class="small text-muted">{{ u.created_at_formatted }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">No readers registered yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recently Added Books -->
+    <div class="col-12 col-lg-6">
+        <div class="admin-card h-100 mb-0">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">✨ Storybooks Chronicle</h3>
+                <a href="{{ url_for('admin_books') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">View Library</a>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Storybook</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in recent_books %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="{{ url_for('static', filename=b.cover) }}" alt="{{ b.title }}" style="width: 32px; height: 44px; object-fit: contain; background: #121026; border-radius: 4px;">
+                                    <div>
+                                        <div class="fw-bold">{{ b.title }}</div>
+                                        <div class="small text-muted">{{ b.author }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-pastel-lavender text-lavender-deep">{{ b.category }}</span></td>
+                            <td>
+                                {% if b.is_published %}
+                                    <span class="badge-status badge-status-published">Published</span>
+                                {% else %}
+                                    <span class="badge-status badge-status-draft">Draft</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_book_edit', book_id=b.id) }}" class="btn-admin-action" title="Edit Book">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <a href="{{ url_for('admin_book_preview', book_id=b.id) }}" class="btn-admin-action" target="_blank" title="Preview Reader">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">No books available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Reading Sessions Line Chart
+    const sessionLabels = {{ chart_session_labels|tojson }};
+    const sessionCounts = {{ chart_session_counts|tojson }};
+    const ctxSessions = document.getElementById('sessionsChart');
+    if (ctxSessions && sessionLabels.length > 0) {
+        new Chart(ctxSessions, {
+            type: 'line',
+            data: {
+                labels: sessionLabels,
+                datasets: [{
+                    label: 'Reading Sessions',
+                    data: sessionCounts,
+                    borderColor: '#7C4DFF',
+                    backgroundColor: 'rgba(124, 77, 255, 0.12)',
+                    fill: true,
+                    tension: 0.35,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#7C4DFF',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 } }
+                }
+            }
+        });
+    }
+
+    // 2. Categories Doughnut Chart
+    const catLabels = {{ chart_category_labels|tojson }};
+    const catCounts = {{ chart_category_counts|tojson }};
+    const ctxCats = document.getElementById('categoriesChart');
+    if (ctxCats && catLabels.length > 0) {
+        new Chart(ctxCats, {
+            type: 'doughnut',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    data: catCounts,
+                    backgroundColor: [
+                        '#7C4DFF', '#E040FB', '#00B0FF', '#00E676', 
+                        '#FFD600', '#FF6D00', '#FF5252', '#795548',
+                        '#607D8B', '#BA68C8'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

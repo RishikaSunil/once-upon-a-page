@@ -1,0 +1,86 @@
+{% extends "admin/base.html" %}
+
+{% block title %}System Settings{% endblock %}
+{% block page_title %}System & Library Preferences{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- General Settings Form -->
+    <div class="col-12 col-lg-7">
+        <div class="admin-card">
+            <h4 class="admin-card-title mb-3">⚙️ Library System Settings</h4>
+            <form action="{{ url_for('admin_settings') }}" method="POST">
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Library Name</label>
+                    <input type="text" name="site_name" class="form-control" value="Once Upon a Page" readonly style="background-color: #F8F9FA;">
+                    <div class="form-text small">Website brand is anchored to "Once Upon a Page".</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Default Target Age Group for New Books</label>
+                    <input type="text" name="default_target_age" class="form-control" value="{{ settings.default_target_age or '3-7 years' }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Default Story Reading Duration</label>
+                    <input type="text" name="default_duration" class="form-control" value="{{ settings.default_duration or '5 mins' }}">
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="enableAutoBookmark" name="enable_auto_bookmark" checked disabled>
+                        <label class="form-check-label fw-bold small" for="enableAutoBookmark">Automatic Bookmark Persistence (MySQL)</label>
+                    </div>
+                    <div class="form-text small">Automatically saves reading progress on every page turn for all signed-in readers.</div>
+                </div>
+
+                <button type="submit" class="btn btn-admin-primary rounded-pill px-4">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Save Preferences
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Database & Environment Diagnostics -->
+    <div class="col-12 col-lg-5">
+        <div class="admin-card h-100">
+            <h4 class="admin-card-title mb-3">🛠️ System Health & Diagnostics</h4>
+            
+            <ul class="list-group list-group-flush small">
+                <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">MySQL Database:</span>
+                    <strong class="text-success"><i class="fa-solid fa-circle-check me-1"></i>Connected (storybook_db)</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">Authentication Engine:</span>
+                    <strong>Flask-Login & Werkzeug (pbkdf2:sha256)</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">Interactive Reader:</span>
+                    <strong>StPageFlip.js & Web Audio API</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">Total Database Tables:</span>
+                    <strong>{{ db_tables_count }} tables active</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">Uploads Storage:</span>
+                    <strong class="text-success">static/uploads/ (Active)</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">Active Admin Session:</span>
+                    <strong class="text-lavender-deep">{{ current_user.email }}</strong>
+                </li>
+            </ul>
+
+            <div class="mt-4 pt-3 border-top">
+                <div class="p-3 bg-light rounded-3 text-muted small">
+                    <i class="fa-solid fa-shield-halved text-primary me-1"></i>
+                    All admin actions, uploads, and modifications are verified and protected by role-based server-side checks.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
