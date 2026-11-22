@@ -183,6 +183,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 dashboardSidebar.classList.remove('sidebar-open');
             }
         });
+
+        // Close sidebar on link click on mobile
+        dashboardSidebar.querySelectorAll('.sidebar-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.innerWidth < 992) {
+                    dashboardSidebar.classList.remove('sidebar-open');
+                }
+            });
+        });
     }
 
 

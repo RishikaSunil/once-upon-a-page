@@ -25,6 +25,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 adminSidebar.classList.remove('open');
             }
         });
+
+        // Close sidebar on link click on mobile
+        adminSidebar.querySelectorAll('.admin-nav-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.innerWidth < 992) {
+                    adminSidebar.classList.remove('open');
+                }
+            });
+        });
     }
 
     // =========================================================================

@@ -260,13 +260,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const isMobile = window.innerWidth < 768;
         const targetResumeIndex = initialLastPage > 1 ? Math.min(totalPages - 2, Math.floor((initialLastPage - 1) / 2) * 2) : 0;
 
+        const winW = window.innerWidth;
+        const baseW = isMobile ? Math.min(360, Math.max(260, winW - 24)) : 490;
+        const baseH = isMobile ? Math.min(540, Math.max(380, Math.floor(baseW * 1.38))) : 640;
+
         pageFlipInstance = new St.PageFlip(bookElement, {
-            width: isMobile ? 350 : 490,
-            height: isMobile ? 500 : 640,
+            width: baseW,
+            height: baseH,
             size: 'stretch',
-            minWidth: 320,
+            minWidth: 240,
             maxWidth: 580,
-            minHeight: 440,
+            minHeight: 340,
             maxHeight: 740,
             maxShadowOpacity: 0.45,
             showCover: false, // Two-page spread starts right away with Spread 1 (Pages 1 & 2)
@@ -307,6 +311,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const spreadNum = Math.floor(targetResumeIndex / 2) + 1;
                 window.StorybookAnimator.onSpreadChange(spreadNum, targetResumeIndex);
             }
+        });
+
+        // Update indicator on orientation change (portrait vs landscape)
+        pageFlipInstance.on('changeOrientation', function () {
+            updatePageIndicator(currentPageIndex);
         });
 
         return pageFlipInstance;

@@ -523,15 +523,114 @@ body.admin-body {
     color: rgba(255, 255, 255, 0.4);
 }
 
-/* Responsive Sidebar Toggle on Mobile */
+/* =============================================================================
+   Comprehensive Mobile & Tablet Responsiveness
+   ============================================================================= */
+
 @media (max-width: 991.98px) {
     .admin-sidebar {
-        transform: translateX(-100%);
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        z-index: 1050 !important;
+        width: 270px !important;
+        max-width: 82vw !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+        box-shadow: 0 0 35px rgba(0, 0, 0, 0.3) !important;
     }
+
     .admin-sidebar.open {
-        transform: translateX(0);
+        transform: translateX(0) !important;
     }
+
     .admin-main {
-        margin-left: 0;
+        margin-left: 0 !important;
+        width: 100% !important;
+        min-height: 100vh;
+    }
+
+    .admin-topbar {
+        padding: 0.65rem 1rem !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .admin-content-container {
+        padding: 1rem 0.75rem !important;
+    }
+
+    .admin-page-title {
+        font-size: 1.15rem !important;
+    }
+
+    .admin-card {
+        padding: 1.1rem 0.85rem !important;
+        border-radius: 14px !important;
+        margin-bottom: 1.2rem !important;
+    }
+
+    .admin-card-title {
+        font-size: 1.05rem !important;
+    }
+
+    /* Fix book editor split columns */
+    .col-md-6.border-end {
+        border-right: none !important;
+        border-bottom: 1px dashed var(--admin-border) !important;
+        padding-bottom: 1.2rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    /* Sticky bar in book editor */
+    .sticky-top.bg-white {
+        top: 60px !important;
+        padding: 0.6rem 0.85rem !important;
+    }
+
+    /* Form controls: 16px to prevent iOS auto-zoom */
+    .admin-card input.form-control,
+    .admin-card select.form-select,
+    .admin-card textarea.form-control {
+        font-size: 16px !important;
+    }
+
+    /* Table cells */
+    .admin-table th,
+    .admin-table td {
+        padding: 0.65rem 0.5rem !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap;
+    }
+
+    /* Stats grid */
+    .admin-stat-card {
+        padding: 1rem !important;
+    }
+
+    .stat-number {
+        font-size: 1.5rem !important;
+    }
+
+    .stat-label {
+        font-size: 0.78rem !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .admin-topbar {
+        padding: 0.5rem 0.65rem !important;
+    }
+
+    .admin-topbar .btn {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.8rem !important;
+    }
+
+    .admin-card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
     }
 }
