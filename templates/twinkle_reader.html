@@ -118,7 +118,7 @@
                     <!-- Hardcover Front with Complete Uncropped Artwork -->
                     <div class="closed-book-front-cover">
                         <img 
-                            src="{{ url_for('static', filename=book.cover) }}" 
+                            src="{{ media_url(book.cover) }}" 
                             alt="{{ book.title }} Illustrated Cover" 
                             class="closed-cover-artwork-img"
                             loading="eager"
@@ -182,7 +182,7 @@
                                  data-title="{{ spread.title }}"
                                  data-book-title="{{ book.title }}">
                                 <img 
-                                    src="{{ url_for('static', filename=spread.illustration) }}" 
+                                    src="{{ media_url(spread.illustration) }}" 
                                     alt="{{ spread.title }} - Scene Illustration" 
                                     class="story-scene-img"
                                     loading="eager"

@@ -92,7 +92,7 @@
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <img src="{{ url_for('static', filename=h.book_cover) }}" alt="{{ h.book_title }}" style="width: 28px; height: 38px; object-fit: contain; background: #121026; border-radius: 4px;">
+                                    <img src="{{ media_url(h.book_cover) }}" alt="{{ h.book_title }}" style="width: 28px; height: 38px; object-fit: contain; background: #121026; border-radius: 4px;">
                                     <span class="fw-bold">{{ h.book_title }}</span>
                                 </div>
                             </td>
@@ -125,7 +125,7 @@
                 {% for f in favorites %}
                 <div class="col-12 col-sm-6">
                     <div class="p-2 border rounded-3 d-flex align-items-center gap-3 bg-light">
-                        <img src="{{ url_for('static', filename=f.book_cover) }}" alt="{{ f.book_title }}" style="width: 36px; height: 48px; object-fit: contain; background: #121026; border-radius: 6px;">
+                        <img src="{{ media_url(f.book_cover) }}" alt="{{ f.book_title }}" style="width: 36px; height: 48px; object-fit: contain; background: #121026; border-radius: 6px;">
                         <div>
                             <div class="fw-bold small">{{ f.book_title }}</div>
                             <span class="badge bg-pastel-lavender text-lavender-deep" style="font-size: 0.72rem;">{{ f.category }}</span>

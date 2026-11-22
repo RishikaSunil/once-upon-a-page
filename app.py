@@ -22,7 +22,8 @@ from flask import (
     flash,
     g,
     jsonify,
-    session
+    session,
+    send_from_directory
 )
 from flask_login import (
     LoginManager,
@@ -932,6 +933,17 @@ def index():
     if current_user.is_authenticated:
         return redirect(url_for('welcome'))
     return redirect(url_for('login'))
+
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """Fallback handler to ensure static assets are served in all environments."""
+    for folder in ['public/static', 'static']:
+        folder_path = os.path.join(app.root_path, folder)
+        file_path = os.path.join(folder_path, filename)
+        if os.path.exists(file_path):
+            return send_from_directory(folder_path, filename)
+    return send_from_directory(os.path.join(app.root_path, 'static'), filename)
 
 
 @app.route('/login', methods=['GET', 'POST'])

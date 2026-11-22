@@ -37,7 +37,7 @@
                 {% for b in books %}
                 <tr>
                     <td style="width: 60px;">
-                        <img src="{{ url_for('static', filename=b.cover) }}" alt="{{ b.title }}" style="width: 44px; height: 60px; object-fit: contain; background: #121026; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+                        <img src="{{ media_url(b.cover) }}" alt="{{ b.title }}" style="width: 44px; height: 60px; object-fit: contain; background: #121026; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
                     </td>
                     <td>
                         <div class="fw-bold">{{ b.title }}</div>

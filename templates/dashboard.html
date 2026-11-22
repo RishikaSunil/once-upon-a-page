@@ -252,7 +252,7 @@
                                 <!-- Miniature 3D Book Cover -->
                                 <div class="history-book-cover-box">
                                     <img 
-                                        src="{{ url_for('static', filename=item.book.cover) }}" 
+                                        src="{{ media_url(item.book.cover) }}" 
                                         alt="{{ item.book.title }}" 
                                         class="history-cover-img">
                                 </div>
@@ -334,7 +334,7 @@
                                                 <!-- Front Cover with Fitted Official Artwork -->
                                                 <div class="book-cover-front">
                                                     <img 
-                                                        src="{{ url_for('static', filename=book.cover) }}" 
+                                                        src="{{ media_url(book.cover) }}" 
                                                         alt="{{ book.title }} Cover" 
                                                         class="book-cover-artwork"
                                                         loading="lazy">
@@ -439,7 +439,7 @@
                                                 
                                                 <!-- Cover Image (Fitted without cropping or distortion) -->
                                                 <img 
-                                                    src="{{ url_for('static', filename=book.cover) }}" 
+                                                    src="{{ media_url(book.cover) }}" 
                                                     alt="{{ book.title }} Cover" 
                                                     class="book-cover-artwork"
                                                     loading="lazy">

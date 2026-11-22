@@ -150,7 +150,7 @@
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <img src="{{ url_for('static', filename=b.cover) }}" alt="{{ b.title }}" style="width: 28px; height: 38px; object-fit: contain; background: #121026; border-radius: 4px;">
+                                    <img src="{{ media_url(b.cover) }}" alt="{{ b.title }}" style="width: 28px; height: 38px; object-fit: contain; background: #121026; border-radius: 4px;">
                                     <div>
                                         <div class="fw-bold small">{{ b.title }}</div>
                                         <span class="badge bg-pastel-lavender text-lavender-deep" style="font-size: 0.7rem;">{{ b.category }}</span>
