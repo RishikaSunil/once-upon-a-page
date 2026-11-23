@@ -212,7 +212,11 @@
 
                     <!-- Miniature Login Card Mockup -->
                     <div class="login-preview-card-mockup">
-                        <div class="small mb-1 text-warning">✨ 📖 ✨</div>
+                        <div class="small mb-1 text-warning d-flex align-items-center justify-content-center gap-1">
+                            <span>✨</span>
+                            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="height: 28px; width: 28px; object-fit: contain;">
+                            <span>✨</span>
+                        </div>
                         <h5 class="fw-bold mb-1" style="font-family: 'Cinzel Decorative', serif; font-size: 1.05rem; color: #3B2A57;">Once Upon a Page</h5>
                         <p class="text-muted mb-3" style="font-size: 0.72rem; font-style: italic;">Every page holds a little magic.</p>
                         

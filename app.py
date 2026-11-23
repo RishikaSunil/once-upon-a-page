@@ -946,6 +946,16 @@ def serve_static(filename):
     return send_from_directory(os.path.join(app.root_path, 'static'), filename)
 
 
+@app.route('/favicon.ico')
+def favicon():
+    """Direct route for browser favicon requests."""
+    for folder in ['public/static/images', 'static/images']:
+        folder_path = os.path.join(app.root_path, folder)
+        if os.path.exists(os.path.join(folder_path, 'favicon.ico')):
+            return send_from_directory(folder_path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(os.path.join(app.root_path, 'static', 'images'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """

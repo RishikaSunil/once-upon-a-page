@@ -71,6 +71,20 @@ body.admin-body {
     gap: 0.6rem;
 }
 
+.admin-brand-logo-img {
+    height: 34px;
+    width: 34px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+    transition: transform 0.25s ease;
+}
+
+.admin-brand-link:hover .admin-brand-logo-img {
+    transform: scale(1.06);
+}
+
 .admin-brand-badge {
     background: linear-gradient(135deg, #7C4DFF 0%, #E040FB 100%);
     color: #FFFFFF;

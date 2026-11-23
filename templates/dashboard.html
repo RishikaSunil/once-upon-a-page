@@ -9,6 +9,11 @@
         {% else %}Storybook Library · Once Upon a Page{% endif %}
     </title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+
     <!-- Google Fonts: Cinzel Decorative, Playfair Display, Quicksand -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,7 +60,7 @@
                 <i class="fa-solid fa-bars"></i>
             </button>
             <a href="{{ url_for('dashboard') }}" class="nav-brand-link d-flex align-items-center gap-2 text-decoration-none">
-                <span class="brand-open-book-icon">📖</span>
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Once Upon a Page" class="brand-logo-img">
                 <span class="brand-text-logo">Once Upon a Page</span>
             </a>
         </div>

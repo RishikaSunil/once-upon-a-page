@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Admin Dashboard{% endblock %} · Once Upon a Page</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+
     <!-- Google Fonts: Cinzel Decorative, Playfair Display, Quicksand -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +41,7 @@
                 <!-- Brand Header -->
                 <div class="admin-sidebar-brand d-flex align-items-center justify-content-between">
                     <a href="{{ url_for('admin_dashboard') }}" class="admin-brand-link">
-                        <span>📖</span>
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Once Upon a Page" class="admin-brand-logo-img">
                         <span>Once Upon a Page</span>
                     </a>
                     <span class="admin-brand-badge">Admin</span>
