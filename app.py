@@ -1280,12 +1280,8 @@ def reader(book_identifier):
         app.logger.error(f"Error checking reading history for book {book.get('id')}: {e}")
 
     spreads = get_book_spreads(book)
-    b_id_str = str(book.get('id', '')).strip()
-    b_slug = (book.get('slug') or '').strip().lower()
-    is_twinkle = ident in ['1', 'twinkle'] or b_id_str == '1' or b_slug == 'twinkle'
-    template_to_render = 'twinkle_reader.html' if is_twinkle else 'reader.html'
     return render_template(
-        template_to_render,
+        'reader.html',
         book=book,
         spreads=spreads,
         last_read_page=last_read_page,
@@ -2197,9 +2193,8 @@ def admin_book_preview(book_id):
         return redirect(url_for('admin_books'))
 
     spreads = get_book_spreads(book)
-    template_to_render = 'twinkle_reader.html' if book['id'] == 1 or book.get('slug') == 'twinkle' else 'reader.html'
     return render_template(
-        template_to_render,
+        'reader.html',
         book=book,
         spreads=spreads,
         last_read_page=1,

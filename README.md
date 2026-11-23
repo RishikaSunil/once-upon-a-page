@@ -33,17 +33,6 @@ A modern, interactive children's digital storybook platform built with **Python 
 
 ---
 
-## ❓ Template Architecture: `twinkle_reader.html` vs `reader.html`
-
-| Template | Purpose |
-|---|---|
-| **`twinkle_reader.html`** | Original dedicated reader template created for the first flagship storybook, **Twinkle** (`/reader/twinkle` or Book ID 1). |
-| **`reader.html`** | Universal reader template for all dynamic and admin-created storybooks (`/reader/<book_identifier>`). |
-
-> **Why both exist**: `twinkle_reader.html` is retained so existing routes, bookmarks, and tests for the flagship *Twinkle* storybook continue to function seamlessly. Under the hood, both templates share the same interactive StPageFlip engine (`static/js/twinkle-reader.js`) and features.
-
----
-
 ## 📁 Project Structure
 
 ```text
@@ -58,8 +47,7 @@ story_book/
 │   ├── login.html             # User login
 │   ├── register.html          # User registration
 │   ├── dashboard.html         # User dashboard & 3D book library
-│   ├── reader.html            # Universal storybook reader template
-│   ├── twinkle_reader.html    # Flagship Twinkle storybook reader template
+│   ├── reader.html            # Unified interactive storybook reader for all books
 │   ├── admin_dashboard.html   # Admin management panel
 │   ├── admin_books.html       # Storybook creation & editing
 │   └── ...
