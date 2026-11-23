@@ -2185,6 +2185,42 @@ body.reader-fullscreen-body {
     opacity: 0.85;
 }
 
+.btn-reader-sound.btn-reader-download {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.reader-download-svg {
+    display: block;
+    width: 17px;
+    height: 17px;
+    color: #EAE3F5;
+    pointer-events: none;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.btn-reader-sound.btn-reader-download:hover .reader-download-svg {
+    color: #FFFFFF;
+    transform: translateY(1px);
+}
+
+.reader-spinner-svg {
+    display: none;
+    width: 17px;
+    height: 17px;
+    color: #FFFFFF;
+    pointer-events: none;
+    animation: readerSpin 0.8s linear infinite;
+}
+
+@keyframes readerSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .reader-magic-toast {
     position: fixed;
     top: 68px;
@@ -4724,6 +4760,17 @@ html, body {
         width: 34px !important;
         height: 34px !important;
         font-size: 0.85rem !important;
+    }
+
+    .btn-reader-sound.btn-reader-download {
+        width: 34px !important;
+        height: 34px !important;
+    }
+
+    .reader-download-svg,
+    .reader-spinner-svg {
+        width: 15px !important;
+        height: 15px !important;
     }
 
     .btn-reader-nav {
