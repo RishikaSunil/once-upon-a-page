@@ -160,6 +160,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
+    <!-- Subtle Magical Click/Tap Sparkle Effect -->
+    <script src="{{ url_for('static', filename='js/sparkle.js') }}" defer></script>
+
     <!-- Welcome Background Video Audio & Playback Controller -->
     {% if welcome_settings and welcome_settings.welcome_bg_type == 'video' and welcome_settings.welcome_bg_video %}
     <script>
