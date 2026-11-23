@@ -79,61 +79,130 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // =========================================================================
-    // 1. Web Audio API Natural Paper Sound Synthesizer
+    // 1. Web Audio API Natural Paper Sound Synthesizer (Mobile-Friendly Singleton)
     // =========================================================================
-    function playPageTurnSound() {
-        if (!soundEnabled) return; // Master reader audio button
-        if (!isPageTurnWhispersEnabled()) return; // Page Turn Whispers preference setting
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return;
-            const ctx = new AudioContext();
-            if (ctx.state === 'suspended') {
-                ctx.resume();
-            }
+    let sharedAudioCtx = null;
+    let cachedPaperNoiseBuffer = null;
 
+    function getAudioContext() {
+        if (!sharedAudioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+                sharedAudioCtx = new AudioContextClass();
+            }
+        }
+        return sharedAudioCtx;
+    }
+
+    // AudioContext unlocking for mobile browsers (iOS Safari & Android Chrome)
+    function unlockAudioContext() {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        if (ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+        }
+
+        // WebKit/iOS audio pipeline unlock: play a silent 1-sample buffer inside user gesture
+        try {
+            const buffer = ctx.createBuffer(1, 1, 22050);
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(ctx.destination);
+            source.start(0);
+        } catch (e) {}
+    }
+
+    // Pre-cache the paper flutter noise buffer once ctx is active
+    function getPaperNoiseBuffer(ctx) {
+        if (!cachedPaperNoiseBuffer || cachedPaperNoiseBuffer.sampleRate !== ctx.sampleRate) {
             const bufferSize = Math.floor(ctx.sampleRate * 0.22); // 220ms
             const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
             const data = buffer.getChannelData(0);
-
-            // Natural paper flutter noise
             for (let i = 0; i < bufferSize; i++) {
                 data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
             }
+            cachedPaperNoiseBuffer = buffer;
+        }
+        return cachedPaperNoiseBuffer;
+    }
 
+    function synthesizePaperTurn(ctx) {
+        try {
+            const buffer = getPaperNoiseBuffer(ctx);
             const noise = ctx.createBufferSource();
             noise.buffer = buffer;
 
             // Bandpass filter centered around paper swish frequency
             const filter = ctx.createBiquadFilter();
             filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(1600, ctx.currentTime);
-            filter.Q.setValueAtTime(1.5, ctx.currentTime);
-            filter.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.2);
+            const now = ctx.currentTime;
+            filter.frequency.setValueAtTime(1600, now);
+            filter.Q.setValueAtTime(1.5, now);
+            filter.frequency.exponentialRampToValueAtTime(800, now + 0.2);
 
             // Gentle volume envelope
             const gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.01, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.28, ctx.currentTime + 0.04);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.21);
+            gain.gain.setValueAtTime(0.01, now);
+            gain.gain.linearRampToValueAtTime(0.32, now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.21);
 
             noise.connect(filter);
             filter.connect(gain);
             gain.connect(ctx.destination);
 
-            noise.start();
-            noise.stop(ctx.currentTime + 0.22);
+            noise.start(now);
+            noise.stop(now + 0.22);
+        } catch (err) {
+            console.warn('Synthesize audio error:', err);
+        }
+    }
+
+    function playPageTurnSound() {
+        if (!soundEnabled) return; // Master reader audio button
+        if (!isPageTurnWhispersEnabled()) return; // Page Turn Whispers preference setting
+        try {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            if (ctx.state === 'suspended') {
+                ctx.resume().then(() => {
+                    synthesizePaperTurn(ctx);
+                }).catch(() => {});
+                return;
+            }
+
+            synthesizePaperTurn(ctx);
         } catch (e) {
             console.warn('Audio note:', e);
         }
     }
 
+    // Register user gesture listeners to unlock AudioContext early
+    const audioUnlockEvents = ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click'];
+    function handleAudioUnlockGesture() {
+        unlockAudioContext();
+        const ctx = getAudioContext();
+        if (ctx && ctx.state === 'running') {
+            audioUnlockEvents.forEach(evt => {
+                window.removeEventListener(evt, handleAudioUnlockGesture, { capture: true });
+                document.removeEventListener(evt, handleAudioUnlockGesture, { capture: true });
+            });
+        }
+    }
+    audioUnlockEvents.forEach(evt => {
+        window.addEventListener(evt, handleAudioUnlockGesture, { capture: true, passive: true });
+        document.addEventListener(evt, handleAudioUnlockGesture, { capture: true, passive: true });
+    });
+
     if (soundToggleBtn && soundIcon) {
         soundToggleBtn.addEventListener('click', function () {
+            unlockAudioContext();
             soundEnabled = !soundEnabled;
             if (soundEnabled) {
                 soundIcon.className = 'fa-solid fa-volume-high';
                 soundToggleBtn.title = 'Sound on';
+                playPageTurnSound();
             } else {
                 soundIcon.className = 'fa-solid fa-volume-xmark text-muted';
                 soundToggleBtn.title = 'Sound muted';
@@ -328,6 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isBookOpen) return;
         isBookOpen = true;
 
+        unlockAudioContext();
         playPageTurnSound();
 
         // 1. Begin fluid 3D physical book cover opening in place
@@ -374,6 +444,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const currentPage = currentPageIndex + 1;
         saveReadingProgress(currentPage, true);
 
+        unlockAudioContext();
         playPageTurnSound();
 
         if (closeBookNavBtn) {
@@ -403,37 +474,65 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event listeners for Opening the Book
     if (closedBookTrigger) {
-        closedBookTrigger.addEventListener('click', openStorybook);
+        closedBookTrigger.addEventListener('click', function () {
+            unlockAudioContext();
+            openStorybook();
+        });
+        closedBookTrigger.addEventListener('touchstart', unlockAudioContext, { passive: true });
     }
     if (openBookActionBtn) {
-        openBookActionBtn.addEventListener('click', openStorybook);
+        openBookActionBtn.addEventListener('click', function () {
+            unlockAudioContext();
+            openStorybook();
+        });
+        openBookActionBtn.addEventListener('touchstart', unlockAudioContext, { passive: true });
     }
     const closedBookObj = document.querySelector('.closed-book-3d-object');
     if (closedBookObj) {
-        closedBookObj.addEventListener('click', openStorybook);
+        closedBookObj.addEventListener('click', function () {
+            unlockAudioContext();
+            openStorybook();
+        });
+        closedBookObj.addEventListener('touchstart', unlockAudioContext, { passive: true });
     }
 
     // Event listeners for Closing the Book
     if (closeBookNavBtn) {
-        closeBookNavBtn.addEventListener('click', closeStorybook);
+        closeBookNavBtn.addEventListener('click', function () {
+            unlockAudioContext();
+            closeStorybook();
+        });
     }
     if (closeBookBottomBtn) {
-        closeBookBottomBtn.addEventListener('click', closeStorybook);
+        closeBookBottomBtn.addEventListener('click', function () {
+            unlockAudioContext();
+            closeStorybook();
+        });
+    }
+
+    // Touch and pointer interaction on the book canvas
+    if (bookElement) {
+        bookElement.addEventListener('touchstart', unlockAudioContext, { passive: true });
+        bookElement.addEventListener('pointerdown', unlockAudioContext, { passive: true });
     }
 
     // Previous and Next Button Controls
     if (prevBtn) {
         prevBtn.addEventListener('click', function (e) {
             e.preventDefault();
+            unlockAudioContext();
             if (pageFlipInstance) pageFlipInstance.flipPrev();
         });
+        prevBtn.addEventListener('touchstart', unlockAudioContext, { passive: true });
     }
 
     if (nextBtn) {
         nextBtn.addEventListener('click', function (e) {
             e.preventDefault();
+            unlockAudioContext();
             if (pageFlipInstance) pageFlipInstance.flipNext();
         });
+        nextBtn.addEventListener('touchstart', unlockAudioContext, { passive: true });
     }
 
     // Keyboard Arrow Navigation

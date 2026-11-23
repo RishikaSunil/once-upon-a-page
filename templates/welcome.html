@@ -167,6 +167,9 @@
 
         if (!video) return;
 
+        let userExplicitlyMuted = false;
+        let audioUnlocked = false;
+
         // Smooth video reveal once data is ready (eliminates any flicker/flash)
         function markVideoReady() {
             video.classList.add('video-ready');
@@ -179,11 +182,7 @@
             video.addEventListener('playing', markVideoReady, { once: true });
         }
 
-        // Set initial sound state (unmuted, full volume)
-        video.volume = volumeSlider ? parseFloat(volumeSlider.value) : 1.0;
-        video.muted = false;
-
-        function setSoundUI(active, promptUser) {
+        function setSoundUI(active) {
             if (!soundToggle) return;
             if (active) {
                 if (soundIcon) soundIcon.className = 'fa-solid fa-volume-high';
@@ -193,47 +192,110 @@
                 soundToggle.setAttribute('aria-pressed', 'true');
             } else {
                 if (soundIcon) soundIcon.className = 'fa-solid fa-volume-xmark';
-                if (soundText) soundText.textContent = promptUser ? 'Enable Sound 🔊' : 'Sound Muted';
-                if (promptUser) {
-                    soundToggle.classList.add('sound-prompt-pulse');
-                } else {
-                    soundToggle.classList.remove('sound-prompt-pulse');
-                }
+                if (soundText) soundText.textContent = 'Sound Muted';
+                soundToggle.classList.remove('sound-prompt-pulse');
                 soundToggle.setAttribute('title', 'Unmute audio');
                 soundToggle.setAttribute('aria-pressed', 'false');
             }
         }
 
-        // Attempt autoplay with audio
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                // Autoplay with audio succeeded!
-                setSoundUI(!video.muted, false);
-            }).catch((err) => {
-                // Autoplay with sound prevented by browser policy
-                console.log('Autoplay with audio blocked by browser policy. Playing muted until visitor interaction.');
-                video.muted = true;
-                video.play().catch(() => {});
-                setSoundUI(false, true);
+        // Sound starts enabled by default in the UI
+        setSoundUI(true);
+
+        try {
+            video.volume = volumeSlider ? parseFloat(volumeSlider.value) : 1.0;
+        } catch (e) {}
+
+        // Listen for user's first interaction to smoothly enable audio if restricted by mobile browser
+        const interactionEvents = ['touchstart', 'touchend', 'pointerdown', 'pointerup', 'mousedown', 'click', 'keydown', 'scroll'];
+
+        function onFirstUserInteraction() {
+            if (userExplicitlyMuted || audioUnlocked) {
+                cleanupInteractionListeners();
+                return;
+            }
+
+            try {
+                video.muted = false;
+                if (volumeSlider) {
+                    video.volume = parseFloat(volumeSlider.value) || 1.0;
+                } else {
+                    video.volume = 1.0;
+                }
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        audioUnlocked = true;
+                        setSoundUI(true);
+                    }).catch(() => {});
+                } else {
+                    audioUnlocked = true;
+                    setSoundUI(true);
+                }
+            } catch (err) {}
+
+            cleanupInteractionListeners();
+        }
+
+        function cleanupInteractionListeners() {
+            interactionEvents.forEach(evt => {
+                window.removeEventListener(evt, onFirstUserInteraction, { capture: true });
+                document.removeEventListener(evt, onFirstUserInteraction, { capture: true });
             });
         }
 
-        // Toggle sound button click
+        function armInteractionListeners() {
+            interactionEvents.forEach(evt => {
+                window.addEventListener(evt, onFirstUserInteraction, { capture: true, passive: true });
+                document.addEventListener(evt, onFirstUserInteraction, { capture: true, passive: true });
+            });
+        }
+
+        // Initial playback attempt: Try unmuted autoplay first
+        video.muted = false;
+        const initialPlayPromise = video.play();
+        if (initialPlayPromise !== undefined) {
+            initialPlayPromise.then(() => {
+                // Autoplay with sound succeeded immediately (desktop / allowed environment)
+                audioUnlocked = true;
+                setSoundUI(true);
+            }).catch(() => {
+                // Mobile browser autoplay policy blocked unmuted playback:
+                // Smoothly fall back to playing muted video visually while preserving Sound On in UI
+                video.muted = true;
+                video.play().catch(() => {});
+                setSoundUI(true);
+                // Arm touch & interaction listeners so sound activates seamlessly on the user's first touch
+                armInteractionListeners();
+            });
+        } else {
+            armInteractionListeners();
+        }
+
+        // Manual sound toggle button click
         if (soundToggle) {
             soundToggle.addEventListener('click', function (e) {
                 e.stopPropagation();
+                cleanupInteractionListeners();
+
                 if (video.muted || video.volume === 0) {
+                    // User manually unmuted
+                    userExplicitlyMuted = false;
                     video.muted = false;
-                    if (video.volume === 0) {
-                        video.volume = 1.0;
-                        if (volumeSlider) volumeSlider.value = 1.0;
-                    }
+                    try {
+                        if (video.volume === 0) {
+                            video.volume = 1.0;
+                            if (volumeSlider) volumeSlider.value = 1.0;
+                        }
+                    } catch (err) {}
                     if (video.paused) video.play().catch(() => {});
-                    setSoundUI(true, false);
+                    audioUnlocked = true;
+                    setSoundUI(true);
                 } else {
+                    // User manually muted
+                    userExplicitlyMuted = true;
                     video.muted = true;
-                    setSoundUI(false, false);
+                    setSoundUI(false);
                 }
             });
         }
@@ -243,31 +305,22 @@
             volumeSlider.addEventListener('input', function (e) {
                 e.stopPropagation();
                 const val = parseFloat(this.value);
-                video.volume = val;
+                try {
+                    video.volume = val;
+                } catch (err) {}
                 if (val === 0) {
+                    userExplicitlyMuted = true;
                     video.muted = true;
-                    setSoundUI(false, false);
+                    setSoundUI(false);
                 } else {
+                    userExplicitlyMuted = false;
                     video.muted = false;
                     if (video.paused) video.play().catch(() => {});
-                    setSoundUI(true, false);
+                    audioUnlocked = true;
+                    setSoundUI(true);
                 }
             });
         }
-
-        // Unmute on first user interaction anywhere if muted due to browser policy
-        function handleFirstInteraction() {
-            if (video && video.muted && soundToggle && soundToggle.classList.contains('sound-prompt-pulse')) {
-                video.muted = false;
-                video.volume = volumeSlider ? parseFloat(volumeSlider.value) : 1.0;
-                if (video.paused) video.play().catch(() => {});
-                setSoundUI(true, false);
-            }
-            document.removeEventListener('click', handleFirstInteraction);
-            document.removeEventListener('keydown', handleFirstInteraction);
-        }
-        document.addEventListener('click', handleFirstInteraction);
-        document.addEventListener('keydown', handleFirstInteraction);
     });
     </script>
     {% endif %}
