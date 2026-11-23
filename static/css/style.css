@@ -4652,6 +4652,21 @@ html, body {
         width: 100% !important;
     }
 
+    /* Disable any unwanted pseudo-element decorative lines on mobile */
+    .book-shelf-column::before,
+    .book-shelf-column::after,
+    .book-3d-container::before,
+    .book-3d-container::after,
+    .book-3d-viewport::before,
+    .book-3d-viewport::after,
+    .book-3d-object::before,
+    .book-3d-object::after,
+    .book-cover-front::before,
+    .book-cover-front::after {
+        display: none !important;
+        content: none !important;
+    }
+
     .book-3d-container {
         width: 136px !important;
     }
@@ -4665,18 +4680,63 @@ html, body {
         height: 192px !important;
     }
 
+    /* 3D Book Spine aligned to mobile 124px x 176px dimensions (no detached yellow vertical strip) */
     .book-spine {
-        left: -13px !important;
+        left: 0 !important;
         width: 16px !important;
+        height: 100% !important;
+        transform: rotateY(-90deg) translateX(-8px) !important;
+        box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .book-spine .spine-emboss-ribs {
+        display: none !important;
     }
 
     .book-spine .spine-vertical-text {
         font-size: 0.58rem !important;
         letter-spacing: 0.08em !important;
+        max-height: 120px !important;
     }
 
     .book-spine .spine-bottom-star {
         font-size: 0.7rem !important;
+    }
+
+    /* 3D Covers aligned to mobile thickness */
+    .book-cover-front {
+        transform: translateZ(8px) !important;
+    }
+
+    .book-cover-back {
+        transform: translateZ(-8px) !important;
+    }
+
+    /* 3D Page Blocks fitted exactly to mobile 124px x 176px book */
+    /* Right paper edge: fitted within 176px height (removes yellow vertical line overflow) */
+    .book-pages-right {
+        top: 3px !important;
+        right: 1px !important;
+        width: 16px !important;
+        height: calc(100% - 6px) !important;
+        transform: rotateY(90deg) translateX(8px) !important;
+    }
+
+    /* Bottom paper edge: fitted within 124px width (removes horizontal dotted/dashed line overflow) */
+    .book-pages-bottom {
+        left: 3px !important;
+        bottom: 1px !important;
+        width: calc(100% - 6px) !important;
+        height: 16px !important;
+        transform: rotateX(-90deg) translateY(8px) !important;
+    }
+
+    /* Ground shadow scaled to mobile book width */
+    .book-ground-shadow {
+        width: 120px !important;
+        left: 2px !important;
+        height: 18px !important;
+        bottom: 2px !important;
     }
 
     .btn-fav-toggle {
@@ -4908,6 +4968,47 @@ html, body {
 
     .book-3d-viewport {
         height: 172px !important;
+    }
+
+    .book-spine {
+        left: 0 !important;
+        width: 14px !important;
+        transform: rotateY(-90deg) translateX(-7px) !important;
+    }
+
+    .book-spine .spine-vertical-text {
+        font-size: 0.52rem !important;
+        max-height: 105px !important;
+    }
+
+    .book-cover-front {
+        transform: translateZ(7px) !important;
+    }
+
+    .book-cover-back {
+        transform: translateZ(-7px) !important;
+    }
+
+    .book-pages-right {
+        top: 3px !important;
+        right: 1px !important;
+        width: 14px !important;
+        height: calc(100% - 6px) !important;
+        transform: rotateY(90deg) translateX(7px) !important;
+    }
+
+    .book-pages-bottom {
+        left: 3px !important;
+        bottom: 1px !important;
+        width: calc(100% - 6px) !important;
+        height: 14px !important;
+        transform: rotateX(-90deg) translateY(7px) !important;
+    }
+
+    .book-ground-shadow {
+        width: 106px !important;
+        left: 2px !important;
+        height: 16px !important;
     }
 
     .closed-book-3d-object {

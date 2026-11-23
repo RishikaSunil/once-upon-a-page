@@ -603,6 +603,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Storybook PDF Download Handler
     // =========================================================================
     const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    const downloadSvgIcon = document.getElementById('downloadSvgIcon');
+    const downloadSpinnerIcon = document.getElementById('downloadSpinnerIcon');
     const downloadIcon = document.getElementById('downloadIcon');
     const toastEl = document.getElementById('readerNotificationToast');
     const toastMsgEl = document.getElementById('readerToastMessage');
@@ -632,7 +634,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (downloadPdfBtn.classList.contains('btn-loading')) return;
             downloadPdfBtn.classList.add('btn-loading');
             
-            const originalIconClass = downloadIcon ? downloadIcon.className : 'fa-solid fa-arrow-down-to-bracket';
+            if (downloadSvgIcon) downloadSvgIcon.style.display = 'none';
+            if (downloadSpinnerIcon) downloadSpinnerIcon.style.display = 'block';
+            const originalIconClass = downloadIcon ? downloadIcon.className : 'fa-solid fa-download';
             if (downloadIcon) {
                 downloadIcon.className = 'fa-solid fa-spinner fa-spin';
             }
@@ -677,6 +681,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 showReaderToast('Our scribes encountered a small hiccup. Please try again! ✦', 4000);
             } finally {
                 downloadPdfBtn.classList.remove('btn-loading');
+                if (downloadSvgIcon) downloadSvgIcon.style.display = 'block';
+                if (downloadSpinnerIcon) downloadSpinnerIcon.style.display = 'none';
                 if (downloadIcon) {
                     downloadIcon.className = originalIconClass;
                 }
