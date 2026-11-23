@@ -86,13 +86,13 @@ For local development or deployment on **Vercel**, set the following environment
 
 | Variable | Description | Example / Default |
 |---|---|---|
-| `SECRET_KEY` | Flask session secret key | *A long random secret string* |
-| `MYSQL_HOST` | Database host (TiDB / MySQL) | `gateway01.ap-southeast-1.prod.aws.tidbcloud.com` |
+| `SECRET_KEY` | Flask session secret key | *your-secret-key* |
+| `MYSQL_HOST` | Database host (TiDB / MySQL) | `your_database_host` |
 | `MYSQL_PORT` | Database port | `4000` (TiDB) or `3306` (MySQL) |
-| `MYSQL_USER` | Database username | `xxxxxx.root` |
-| `MYSQL_PASSWORD` | Database password | *Your DB password* |
-| `MYSQL_DB` | Database name | `storybook_db` |
-| `CLOUDINARY_URL` | Cloudinary connection string *(optional)* | `cloudinary://api_key:api_secret@cloud_name` |
+| `MYSQL_USER` | Database username | `your_username` |
+| `MYSQL_PASSWORD` | Database password | *your_password* |
+| `MYSQL_DB` | Database name | `	your_database_name` |
+| `CLOUDINARY_URL` | Cloudinary connection string *(optional)* | `your_cloudinary_url` |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | `your_cloud_name` |
 | `CLOUDINARY_API_KEY` | Cloudinary API key | `your_api_key` |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret | `your_api_secret` |
@@ -129,7 +129,7 @@ MYSQL_HOST=localhost
 MYSQL_PORT=3306
 MYSQL_USER=root
 MYSQL_PASSWORD=your_password
-MYSQL_DB=storybook_db
+MYSQL_DB=your_database_name
 ```
 
 ### 5. Launch the application
