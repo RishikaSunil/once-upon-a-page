@@ -82,11 +82,14 @@
             <span class="reader-title-icon">✨</span>
         </div>
 
-        <!-- Right Controls: Close Book, Sound Toggle, Settings & Page Indicator -->
+        <!-- Right Controls: Close Book, Download PDF, Sound Toggle, Settings & Page Indicator -->
         <div class="d-flex align-items-center gap-2">
             <button class="btn-reader-nav btn-reader-close" id="closeBookNavBtn" title="Close book" style="display: none;">
                 <i class="fa-solid fa-book-bookmark me-1"></i>
                 <span class="d-none d-md-inline">Close Book</span>
+            </button>
+            <button class="btn-reader-sound btn-reader-download" id="downloadPdfBtn" title="Download Storybook" aria-label="Download Storybook as PDF">
+                <i class="fa-solid fa-arrow-down-to-bracket" id="downloadIcon"></i>
             </button>
             <button class="btn-reader-sound" id="soundToggleBtn" title="Toggle Sound">
                 <i class="fa-solid fa-volume-high" id="soundIcon"></i>
@@ -100,6 +103,12 @@
         </div>
 
     </header>
+
+    <!-- Reader Notification / Download Toast -->
+    <div id="readerNotificationToast" class="reader-magic-toast" role="status" aria-live="polite" style="display: none;">
+        <span class="toast-sparkle">✨</span>
+        <span id="readerToastMessage" class="toast-text">Your little story is ready to take home! ✨</span>
+    </div>
 
 
     <!-- Central Main Experience (Grid Stack Centering) -->

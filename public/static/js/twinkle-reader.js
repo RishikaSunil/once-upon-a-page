@@ -598,4 +598,89 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (e) {}
         });
     }
+
+    // =========================================================================
+    // Storybook PDF Download Handler
+    // =========================================================================
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    const downloadIcon = document.getElementById('downloadIcon');
+    const toastEl = document.getElementById('readerNotificationToast');
+    const toastMsgEl = document.getElementById('readerToastMessage');
+    let toastTimeout = null;
+
+    function showReaderToast(message, duration = 3500) {
+        if (!toastEl || !toastMsgEl) return;
+        toastMsgEl.textContent = message;
+        toastEl.style.display = 'flex';
+        toastEl.classList.remove('toast-fade-out');
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toastEl.classList.add('toast-fade-out');
+            setTimeout(() => {
+                toastEl.style.display = 'none';
+                toastEl.classList.remove('toast-fade-out');
+            }, 350);
+        }, duration);
+    }
+
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            unlockAudioContext();
+
+            // Prevent multi-clicks while downloading
+            if (downloadPdfBtn.classList.contains('btn-loading')) return;
+            downloadPdfBtn.classList.add('btn-loading');
+            
+            const originalIconClass = downloadIcon ? downloadIcon.className : 'fa-solid fa-arrow-down-to-bracket';
+            if (downloadIcon) {
+                downloadIcon.className = 'fa-solid fa-spinner fa-spin';
+            }
+            showReaderToast('Binding your enchanted storybook into a PDF... ✨', 10000);
+
+            try {
+                const bookTitle = (readerConfig && readerConfig.dataset.bookTitle) || 'Storybook';
+                const defaultFilename = (bookTitle.replace(/[^\w\s-]/g, '').trim().replace(/[-\s]+/g, '_') || 'Storybook') + '.pdf';
+                
+                const response = await fetch('/api/book/' + bookId + '/pdf');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok (' + response.status + ')');
+                }
+
+                // Check content disposition header for exact filename
+                let filename = defaultFilename;
+                const disposition = response.headers.get('Content-Disposition');
+                if (disposition && disposition.indexOf('filename=') !== -1) {
+                    const match = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                    if (match && match[1]) {
+                        filename = match[1].replace(/['"]/g, '').trim();
+                    }
+                }
+
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const tempLink = document.createElement('a');
+                tempLink.style.display = 'none';
+                tempLink.href = blobUrl;
+                tempLink.download = filename;
+                document.body.appendChild(tempLink);
+                tempLink.click();
+
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(blobUrl);
+                    if (tempLink.parentNode) tempLink.parentNode.removeChild(tempLink);
+                }, 2000);
+
+                showReaderToast('Your little story is ready to take home! ✨', 4000);
+            } catch (err) {
+                console.error('PDF download error:', err);
+                showReaderToast('Our scribes encountered a small hiccup. Please try again! ✦', 4000);
+            } finally {
+                downloadPdfBtn.classList.remove('btn-loading');
+                if (downloadIcon) {
+                    downloadIcon.className = originalIconClass;
+                }
+            }
+        });
+    }
 });

@@ -5,3 +5,4 @@ PyMySQL>=1.1.0
 cryptography>=42.0.0
 python-dotenv>=1.0.0
 cloudinary
+pillow>=10.0.0

@@ -9,6 +9,7 @@ import json
 import shutil
 import uuid
 import math
+import io
 from functools import wraps
 from datetime import datetime, date, timedelta
 import pymysql
@@ -23,7 +24,8 @@ from flask import (
     g,
     jsonify,
     session,
-    send_from_directory
+    send_from_directory,
+    send_file
 )
 from flask_login import (
     LoginManager,
@@ -1194,18 +1196,14 @@ def dashboard():
     )
 
 
-@app.route('/reader/<book_identifier>')
-@login_required
-def reader(book_identifier):
+def get_book_by_identifier(book_identifier):
     """
-    Reader route for storybooks:
-    Loads ANY book by id or slug.
-    Retrieves or initializes user's reading history in MySQL, and renders the interactive
-    closed-to-open reader with StPageFlip.js.
+    Look up storybook by id or slug from MySQL/TiDB database,
+    falling back to default STORYBOOKS catalog.
     """
+    if not book_identifier:
+        return None
     ident = str(book_identifier).strip().lower()
-
-    # 1. Look up book from database or fallback to STORYBOOKS
     book = None
     try:
         db = get_db()
@@ -1231,6 +1229,19 @@ def reader(book_identifier):
                 book = next((dict(b) for b in STORYBOOKS if b['id'] == b_id), None)
             except ValueError:
                 book = next((dict(b) for b in STORYBOOKS if b.get('slug') == ident), None)
+    return book
+
+
+@app.route('/reader/<book_identifier>')
+@login_required
+def reader(book_identifier):
+    """
+    Reader route for storybooks:
+    Loads ANY book by id or slug.
+    Retrieves or initializes user's reading history in MySQL, and renders the interactive
+    closed-to-open reader with StPageFlip.js.
+    """
+    book = get_book_by_identifier(book_identifier)
 
     if not book:
         flash('The selected storybook is being bound by our scribes. Please choose another!', 'warning')
@@ -1276,6 +1287,46 @@ def reader(book_identifier):
         last_read_page=last_read_page,
         is_preview=False
     )
+
+
+@app.route('/api/book/<book_identifier>/pdf')
+@login_required
+def download_storybook_pdf(book_identifier):
+    """
+    Generate and stream high-resolution storybook PDF for download.
+    Preserves original illustrations, story prose, typography, dialogs, moral card,
+    colors and overall page design as a professionally designed children's picture book.
+    """
+    book = get_book_by_identifier(book_identifier)
+    if not book:
+        return jsonify({'error': 'Storybook not found.'}), 404
+
+    # If book is a draft and user is not an admin, deny access
+    if not book.get('is_published', 1) and not getattr(current_user, 'is_admin', False):
+        return jsonify({'error': 'This storybook is currently undergoing draft binding.'}), 403
+
+    try:
+        from pdf_generator import generate_storybook_pdf
+        spreads = get_book_spreads(book)
+        pdf_bytes = generate_storybook_pdf(book, spreads)
+
+        # Sanitize book title for downloaded filename (e.g. Vihu_and_Her_Aayi.pdf)
+        raw_title = book.get('title', 'Storybook')
+        clean_title = re.sub(r'[^\w\s-]', '', raw_title).strip()
+        clean_title = re.sub(r'[-\s]+', '_', clean_title) or 'Storybook'
+        filename = f"{clean_title}.pdf"
+
+        response = send_file(
+            io.BytesIO(pdf_bytes),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=filename
+        )
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return response
+    except Exception as e:
+        app.logger.error(f"Error generating PDF for {book_identifier}: {e}")
+        return jsonify({'error': 'Failed to generate storybook PDF. Please try again.'}), 500
 
 
 # ==============================================================================
