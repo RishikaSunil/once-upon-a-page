@@ -2884,6 +2884,91 @@ body.reader-fullscreen-body {
     opacity: 0;
 }
 
+/* 3D Book Closing Transition Animation (Smooth Reverse Opening in Place) */
+.book-closing-animation .closed-book-front-cover {
+    animation: bookCloseCover 0.65s cubic-bezier(0.35, 0, 0.2, 1) forwards;
+}
+
+.book-closing-animation .closed-book-3d-object {
+    animation: bookCloseObject 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.book-closing-animation .closed-book-ground-shadow {
+    animation: bookCloseShadow 0.6s ease forwards;
+}
+
+.book-closing-animation .closed-book-magic-aura {
+    animation: bookCloseAura 0.65s ease forwards;
+}
+
+@keyframes bookCloseCover {
+    0% {
+        transform: translateZ(16px) rotateY(-155deg);
+        opacity: 0.2;
+    }
+    40% {
+        opacity: 0.75;
+    }
+    100% {
+        transform: translateZ(16px) rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes bookCloseObject {
+    0% {
+        transform: rotateY(0deg) rotateX(0deg);
+    }
+    100% {
+        transform: rotateY(-14deg) rotateX(4deg);
+    }
+}
+
+@keyframes bookCloseShadow {
+    0% {
+        transform: rotateX(75deg) scale(1.05);
+        opacity: 0.25;
+    }
+    100% {
+        transform: translateY(22px) rotateX(75deg);
+        opacity: 0.6;
+    }
+}
+
+@keyframes bookCloseAura {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.85;
+    }
+}
+
+/* Final Page Finish Button Glow */
+.btn-reader-turn.btn-reader-finish {
+    background: linear-gradient(135deg, rgba(230, 180, 70, 0.3) 0%, rgba(200, 140, 240, 0.35) 100%) !important;
+    border-color: rgba(255, 220, 120, 0.6) !important;
+    color: #FFF9E6 !important;
+    box-shadow: 0 0 14px rgba(255, 215, 0, 0.35) !important;
+}
+
+.btn-reader-turn.btn-reader-finish:hover {
+    background: linear-gradient(135deg, rgba(255, 205, 90, 0.45) 0%, rgba(220, 160, 255, 0.5) 100%) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5) !important;
+}
+
+.enchanted-seal {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.enchanted-seal:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 16px rgba(255, 215, 0, 0.6);
+}
+
 /* Action Button: Positioned neatly below closed book without offsetting vertical center */
 .closed-book-action-container {
     position: absolute;

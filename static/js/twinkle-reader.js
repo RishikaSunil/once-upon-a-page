@@ -256,25 +256,62 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // =========================================================================
-    // 3. Page Counter Indicator Formatter
+    // 3. Page Counter Indicator Formatter & End-of-Book Detection
     // =========================================================================
+    function isAtLastPage() {
+        if (!pageFlipInstance) return false;
+        const pageCount = (typeof pageFlipInstance.getPageCount === 'function' && pageFlipInstance.getPageCount() > 0)
+            ? pageFlipInstance.getPageCount()
+            : (bookElement ? bookElement.querySelectorAll('.page').length : totalPages);
+        const isLandscape = (typeof pageFlipInstance.getOrientation === 'function')
+            ? (pageFlipInstance.getOrientation() === 'landscape')
+            : (window.innerWidth >= 768);
+        const cur = (typeof pageFlipInstance.getCurrentPageIndex === 'function')
+            ? pageFlipInstance.getCurrentPageIndex()
+            : currentPageIndex;
+
+        if (isLandscape) {
+            return cur >= pageCount - 2;
+        } else {
+            return cur >= pageCount - 1;
+        }
+    }
+
     function updatePageIndicator(pageIndex) {
         if (!pageIndicator) return;
         currentPageIndex = pageIndex;
         
         const isLandscape = pageFlipInstance ? (pageFlipInstance.getOrientation() === 'landscape') : (window.innerWidth >= 768);
+        const atLast = isAtLastPage();
 
         if (isLandscape) {
             const leftPage = pageIndex + 1;
             const rightPage = Math.min(pageIndex + 2, totalPages);
-            if (leftPage >= totalPages) {
+            if (atLast) {
                 pageIndicator.textContent = `Page ${totalPages} of ${totalPages} · The End 💛`;
             } else {
                 pageIndicator.textContent = `Pages ${leftPage} - ${rightPage} of ${totalPages}`;
             }
         } else {
             const curPage = Math.min(pageIndex + 1, totalPages);
-            pageIndicator.textContent = `Page ${curPage} of ${totalPages}`;
+            if (atLast) {
+                pageIndicator.textContent = `Page ${curPage} of ${totalPages} · The End 💛`;
+            } else {
+                pageIndicator.textContent = `Page ${curPage} of ${totalPages}`;
+            }
+        }
+
+        // When at the final page, update the Next button text & styling
+        if (nextBtn) {
+            if (atLast) {
+                nextBtn.title = 'Finish story and close book';
+                nextBtn.classList.add('btn-reader-finish');
+                nextBtn.innerHTML = 'Close Book <i class="fa-solid fa-book-bookmark ms-1 ms-md-2"></i>';
+            } else {
+                nextBtn.title = 'Next page';
+                nextBtn.classList.remove('btn-reader-finish');
+                nextBtn.innerHTML = 'Next <i class="fa-solid fa-chevron-right ms-1 ms-md-2"></i>';
+            }
         }
     }
 
@@ -401,6 +438,7 @@ document.addEventListener('DOMContentLoaded', function () {
         playPageTurnSound();
 
         // 1. Begin fluid 3D physical book cover opening in place
+        closedBookStage.classList.remove('book-closing-animation');
         closedBookStage.classList.add('book-opening-animation');
 
         // 2. Seamlessly crossfade to the aligned opened reader as cover swings open
@@ -416,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // 3. Finalize stages after transition finishes
         setTimeout(() => {
             closedBookStage.style.display = 'none';
-            closedBookStage.classList.remove('active');
+            closedBookStage.classList.remove('active', 'book-opening-animation');
             updatePageIndicator(currentPageIndex);
             prepareUpcomingPages(currentPageIndex);
 
@@ -429,9 +467,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // =========================================================================
-    // 7. Smooth Closing Animation (Return to Closed 3D Book State)
+    // 7. Smooth Closing Animation (Reverse Physical Cover-Shutting Motion)
     // =========================================================================
-    function closeStorybook() {
+    let isClosingAnimationRunning = false;
+
+    function closeStorybook(isFinishedAtEnd = false) {
         if (!isBookOpen) return;
         isBookOpen = false;
 
@@ -440,9 +480,26 @@ document.addEventListener('DOMContentLoaded', function () {
             window.StorybookAnimator.pauseAll();
         }
 
-        // Save current progress immediately before closing
-        const currentPage = currentPageIndex + 1;
-        saveReadingProgress(currentPage, true);
+        // Reading History & Progress Requirement:
+        // Only reset the reading position to page 1 when the user reaches the final page and closes the book.
+        // Normal resume-reading behaviour must remain unchanged when a user closes a book before reaching the end.
+        if (isFinishedAtEnd) {
+            saveReadingProgress(1, true);
+            currentPageIndex = 0;
+            if (readerConfig) {
+                readerConfig.dataset.lastReadPage = '1';
+            }
+            if (pageFlipInstance) {
+                try {
+                    pageFlipInstance.turnToPage(0);
+                } catch (e) {
+                    try { pageFlipInstance.flip(0); } catch (e2) {}
+                }
+            }
+        } else {
+            const currentPage = currentPageIndex + 1;
+            saveReadingProgress(currentPage, true);
+        }
 
         unlockAudioContext();
         playPageTurnSound();
@@ -451,19 +508,35 @@ document.addEventListener('DOMContentLoaded', function () {
             closeBookNavBtn.style.display = 'none';
         }
 
-        // Fade out opened reader
+        // 1. Crossfade out opened reader
         openBookStage.classList.remove('active');
 
-        // Restore closed book in place
+        // 2. Smoothly animate back into closed-book cover state (opening animation in reverse)
         closedBookStage.style.display = 'flex';
-        requestAnimationFrame(() => {
-            closedBookStage.classList.remove('book-opening-animation', 'book-closed-fade');
-            closedBookStage.classList.add('active');
-        });
+        closedBookStage.classList.remove('book-closed-fade', 'book-opening-animation');
+        closedBookStage.classList.add('active', 'book-closing-animation');
 
-        if (pageIndicator) {
-            pageIndicator.textContent = 'Closed Book';
-        }
+        setTimeout(() => {
+            closedBookStage.classList.remove('book-closing-animation');
+            closedBookStage.classList.add('active');
+            if (pageIndicator) {
+                pageIndicator.textContent = 'Closed Book';
+            }
+            if (nextBtn) {
+                nextBtn.classList.remove('btn-reader-finish');
+                nextBtn.title = 'Next page';
+                nextBtn.innerHTML = 'Next <i class="fa-solid fa-chevron-right ms-1 ms-md-2"></i>';
+            }
+        }, 650);
+    }
+
+    function handleFinalPageTurnClose() {
+        if (isClosingAnimationRunning || !isBookOpen) return;
+        isClosingAnimationRunning = true;
+        closeStorybook(true);
+        setTimeout(() => {
+            isClosingAnimationRunning = false;
+        }, 750);
     }
 
     // Pre-initialize StPageFlip so pages, canvases and layouts are 100% prepared
@@ -500,21 +573,71 @@ document.addEventListener('DOMContentLoaded', function () {
     if (closeBookNavBtn) {
         closeBookNavBtn.addEventListener('click', function () {
             unlockAudioContext();
-            closeStorybook();
+            closeStorybook(isAtLastPage());
         });
     }
     if (closeBookBottomBtn) {
         closeBookBottomBtn.addEventListener('click', function () {
             unlockAudioContext();
-            closeStorybook();
+            closeStorybook(isAtLastPage());
         });
     }
 
     // Touch and pointer interaction on the book canvas
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
     if (bookElement) {
-        bookElement.addEventListener('touchstart', unlockAudioContext, { passive: true });
+        bookElement.addEventListener('touchstart', function (e) {
+            unlockAudioContext();
+            if (e.touches && e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                touchStartTime = Date.now();
+            }
+        }, { passive: true });
         bookElement.addEventListener('pointerdown', unlockAudioContext, { passive: true });
+
+        // Touch swipe on mobile: when on final page, swiping left closes the book
+        bookElement.addEventListener('touchend', function (e) {
+            if (!isBookOpen || !isAtLastPage()) return;
+            if (e.changedTouches && e.changedTouches.length === 1) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+                const deltaTime = Date.now() - touchStartTime;
+
+                // Swipe left (dragging right-to-left to turn next):
+                if (deltaX < -35 && Math.abs(deltaY) < Math.abs(deltaX) * 1.5 && deltaTime < 800) {
+                    handleFinalPageTurnClose();
+                }
+            }
+        }, { passive: true });
+
+        // Click / tap on the right half of the book on the final spread closes the book
+        bookElement.addEventListener('click', function (e) {
+            if (!isBookOpen || !isAtLastPage()) return;
+            if (e.target.closest('button, a, input, select')) return;
+            const rect = bookElement.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            if (clickX > rect.width * 0.5) {
+                handleFinalPageTurnClose();
+            }
+        });
     }
+
+    // Direct click on "★ The End ★" seal or ribbon closes the book
+    const theEndElements = document.querySelectorAll('.enchanted-seal, .the-end-ribbon');
+    theEndElements.forEach(el => {
+        el.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            unlockAudioContext();
+            handleFinalPageTurnClose();
+        });
+    });
 
     // Previous and Next Button Controls
     if (prevBtn) {
@@ -530,7 +653,12 @@ document.addEventListener('DOMContentLoaded', function () {
         nextBtn.addEventListener('click', function (e) {
             e.preventDefault();
             unlockAudioContext();
-            if (pageFlipInstance) pageFlipInstance.flipNext();
+            if (!pageFlipInstance) return;
+            if (isAtLastPage()) {
+                handleFinalPageTurnClose();
+            } else {
+                pageFlipInstance.flipNext();
+            }
         });
         nextBtn.addEventListener('touchstart', unlockAudioContext, { passive: true });
     }
@@ -539,11 +667,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', function (e) {
         if (!isBookOpen || !pageFlipInstance) return;
         if (e.key === 'ArrowRight' || e.key === ' ') {
-            pageFlipInstance.flipNext();
+            if (isAtLastPage()) {
+                handleFinalPageTurnClose();
+            } else {
+                pageFlipInstance.flipNext();
+            }
         } else if (e.key === 'ArrowLeft') {
             pageFlipInstance.flipPrev();
         } else if (e.key === 'Escape') {
-            closeStorybook();
+            closeStorybook(isAtLastPage());
         }
     });
 
