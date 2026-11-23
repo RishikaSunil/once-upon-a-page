@@ -1241,6 +1241,7 @@ def reader(book_identifier):
     Retrieves or initializes user's reading history in MySQL, and renders the interactive
     closed-to-open reader with StPageFlip.js.
     """
+    ident = str(book_identifier).strip().lower()
     book = get_book_by_identifier(book_identifier)
 
     if not book:
@@ -1255,8 +1256,8 @@ def reader(book_identifier):
     # 2. Retrieve or initialize reading progress in MySQL
     last_read_page = 1
     total_pages = book.get('pages', 16)
-    db = get_db()
     try:
+        db = get_db()
         with db.cursor() as cur:
             cur.execute(
                 "SELECT last_read_page, total_pages FROM reading_history WHERE user_id = %s AND book_id = %s",
@@ -1276,10 +1277,13 @@ def reader(book_identifier):
                     (current_user.id, book['id'], 1, total_pages)
                 )
     except Exception as e:
-        app.logger.error(f"Error checking reading history for book {book['id']}: {e}")
+        app.logger.error(f"Error checking reading history for book {book.get('id')}: {e}")
 
     spreads = get_book_spreads(book)
-    template_to_render = 'twinkle_reader.html' if ident in ['1', 'twinkle'] else 'reader.html'
+    b_id_str = str(book.get('id', '')).strip()
+    b_slug = (book.get('slug') or '').strip().lower()
+    is_twinkle = ident in ['1', 'twinkle'] or b_id_str == '1' or b_slug == 'twinkle'
+    template_to_render = 'twinkle_reader.html' if is_twinkle else 'reader.html'
     return render_template(
         template_to_render,
         book=book,
