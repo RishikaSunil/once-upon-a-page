@@ -218,28 +218,30 @@ document.addEventListener('DOMContentLoaded', function () {
     let saveDebounceTimer = null;
     let lastSavedPage = null;
 
-    function saveReadingProgress(pageNumber, immediate = false) {
-        if (isPreviewMode) return;
-        if (!pageNumber || pageNumber < 1) return;
-        if (pageNumber === lastSavedPage && !immediate) return;
+    function saveReadingProgress(pageNumber, immediate = false, isCompleted = false) {
+        if (isPreviewMode) return Promise.resolve(null);
+        if (!pageNumber || pageNumber < 1) return Promise.resolve(null);
+        if (pageNumber === lastSavedPage && !immediate && !isCompleted) return Promise.resolve(null);
 
         if (!immediate) {
             if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
-            saveDebounceTimer = setTimeout(() => {
-                performSave(pageNumber);
-            }, 1500);
+            return new Promise(resolve => {
+                saveDebounceTimer = setTimeout(() => {
+                    resolve(performSave(pageNumber, isCompleted));
+                }, 1500);
+            });
         } else {
             if (saveDebounceTimer) {
                 clearTimeout(saveDebounceTimer);
                 saveDebounceTimer = null;
             }
-            performSave(pageNumber);
+            return performSave(pageNumber, isCompleted);
         }
     }
 
-    function performSave(pageNumber) {
+    function performSave(pageNumber, isCompleted = false) {
         lastSavedPage = pageNumber;
-        fetch('/api/reading-history/save', {
+        return fetch('/api/reading-history/save', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -248,10 +250,14 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify({
                 book_id: bookId,
                 page_number: pageNumber,
-                total_pages: totalPages
+                total_pages: totalPages,
+                is_completed: isCompleted
             })
-        }).catch(err => {
+        })
+        .then(res => res.json())
+        .catch(err => {
             console.error('Failed to save reading history:', err);
+            return null;
         });
     }
 
@@ -483,8 +489,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Reading History & Progress Requirement:
         // Only reset the reading position to page 1 when the user reaches the final page and closes the book.
         // Normal resume-reading behaviour must remain unchanged when a user closes a book before reaching the end.
+        let completionPromise = null;
         if (isFinishedAtEnd) {
-            saveReadingProgress(1, true);
+            completionPromise = saveReadingProgress(1, true, true);
             currentPageIndex = 0;
             if (readerConfig) {
                 readerConfig.dataset.lastReadPage = '1';
@@ -498,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } else {
             const currentPage = currentPageIndex + 1;
-            saveReadingProgress(currentPage, true);
+            saveReadingProgress(currentPage, true, false);
         }
 
         unlockAudioContext();
@@ -526,6 +533,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 nextBtn.classList.remove('btn-reader-finish');
                 nextBtn.title = 'Next page';
                 nextBtn.innerHTML = 'Next <i class="fa-solid fa-chevron-right ms-1 ms-md-2"></i>';
+            }
+
+            // Immediately after closing animation completes, display rating popup if eligible
+            if (isFinishedAtEnd && typeof StorybookRating !== 'undefined') {
+                const hasRated = readerConfig && readerConfig.dataset.hasRated === 'true';
+                if (!hasRated) {
+                    if (completionPromise) {
+                        completionPromise.then(res => {
+                            if (res && res.should_prompt_rating) {
+                                setTimeout(() => {
+                                    StorybookRating.open(bookId, bookTitle, function (submitted) {
+                                        if (readerConfig) readerConfig.dataset.hasRated = 'true';
+                                    });
+                                }, 200);
+                            }
+                        });
+                    } else {
+                        setTimeout(() => {
+                            StorybookRating.open(bookId, bookTitle, function (submitted) {
+                                if (readerConfig) readerConfig.dataset.hasRated = 'true';
+                            });
+                        }, 200);
+                    }
+                }
             }
         }, 650);
     }

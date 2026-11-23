@@ -19,16 +19,25 @@ A modern, interactive children's digital storybook platform built with **Python 
 - **Reading Progress & Resume**: Automatically records reading progress; reopening a book in-progress resumes exactly where the reader left off.
 - **High-Resolution PDF Download**: Generates and downloads the opened storybook as a high-quality PDF with full covers, illustrations, and formatted story pages.
 
-### 2. 📚 Storybook Library & User Dashboard
+### 2. ⭐ One-Time Rating & Review System
+- **Automatic Post-Completion Prompt**: Immediately after the 3D book cover closes on the final page, a magical rating modal appears inviting the reader to rate the story.
+- **Interactive 1–5 Star Rating**: Interactive golden star selection with live feedback labels and twinkle effects.
+- **Optional Review Note**: Readers can optionally write a short review note or skip the prompt.
+- **One-Time Prompt Per Book**: Enforced via database unique constraint (`user_id`, `book_id`); once submitted or skipped, users are never prompted for that book again.
+- **Sequential Handling for Completed Books**: When visiting the dashboard, any previously completed books awaiting their rating prompt are presented smoothly **one at a time**.
+- **Real Average Ratings**: Dynamic database-calculated average ratings and review counts replace hardcoded dummy ratings (`Not rated yet` for unrated books).
+- **Admin Review Oversight**: Administrators can view submitted ratings and reviews inside the existing book management view.
+
+### 3. 📚 Storybook Library & User Dashboard
 - **3D Physical Book Cards**: Realistic book spine, page blocks, drop shadows, and 3D hover tilt.
 - **Personalized Experience**: User login/registration, reading history, favorites, categories, and light/dark theme toggle.
 - **Magical Touch Sparkles**: Delicate, tiny 4-point golden sparkles appear on tap or click anywhere on the site.
 
-### 3. 🎨 Dynamic Admin CMS & Cloudinary Media
+### 4. 🎨 Dynamic Admin CMS & Cloudinary Media
 - **Admin Dashboard**: Upload new storybooks, manage categories, add/edit page spreads, and manage user accounts.
 - **Cloudinary Integration**: Story illustrations and book covers are stored securely in the cloud with automatic CDN delivery, keeping the application lightweight on serverless runtimes.
 
-### 4. 🌙 Ambient Welcome Page
+### 5. 🌙 Ambient Welcome Page
 - Fullscreen cozy illustration with soothing background audio, ambient twinkling stars, and quick access to the storybook library.
 
 ---

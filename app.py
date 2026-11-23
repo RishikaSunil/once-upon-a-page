@@ -246,10 +246,39 @@ def init_db():
                     book_id INT NOT NULL,
                     last_read_page INT NOT NULL DEFAULT 1,
                     total_pages INT NOT NULL DEFAULT 16,
+                    is_completed TINYINT(1) NOT NULL DEFAULT 0,
+                    completed_at DATETIME NULL,
                     last_opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE KEY unique_user_history (user_id, book_id),
                     CONSTRAINT fk_user_history FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            """)
+            # Ensure is_completed and completed_at columns exist for legacy tables
+            try:
+                cur.execute("SHOW COLUMNS FROM reading_history LIKE 'is_completed'")
+                if not cur.fetchone():
+                    cur.execute("ALTER TABLE reading_history ADD COLUMN is_completed TINYINT(1) NOT NULL DEFAULT 0")
+                cur.execute("SHOW COLUMNS FROM reading_history LIKE 'completed_at'")
+                if not cur.fetchone():
+                    cur.execute("ALTER TABLE reading_history ADD COLUMN completed_at DATETIME NULL")
+            except Exception as _e_col:
+                pass
+
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS book_reviews (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id INT NOT NULL,
+                    book_id INT NOT NULL,
+                    rating INT NULL,
+                    review_text TEXT NULL,
+                    status VARCHAR(20) NOT NULL DEFAULT 'submitted',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    UNIQUE KEY unique_user_book_review (user_id, book_id),
+                    CONSTRAINT fk_book_review_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    CONSTRAINT fk_book_review_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+                    INDEX idx_book_status (book_id, status)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             """)
             cur.execute("""
@@ -1118,16 +1147,20 @@ def dashboard():
     except Exception as e:
         app.logger.error(f"Error fetching favorites: {e}")
 
-    # 3. Fetch published books from MySQL books table
+    # 3. Fetch published books from MySQL books table with calculated average ratings
     books_list = []
     try:
         with db.cursor() as cur:
             cur.execute("""
                 SELECT b.id, b.slug, b.title, b.category_id, b.category, b.cover, 
                        b.author, b.description, b.target_age, b.pages, b.duration, 
-                       b.rating, b.is_published, b.created_at
+                       b.is_published, b.created_at,
+                       ROUND(AVG(r.rating), 1) AS avg_rating,
+                       COUNT(r.rating) AS rating_count
                 FROM books b
+                LEFT JOIN book_reviews r ON b.id = r.book_id AND r.status = 'submitted' AND r.rating IS NOT NULL
                 WHERE b.is_published = 1
+                GROUP BY b.id
                 ORDER BY b.id ASC
             """)
             db_books = cur.fetchall()
@@ -1135,6 +1168,15 @@ def dashboard():
                 for b in db_books:
                     b_dict = dict(b)
                     b_dict['is_favorite'] = (b['id'] in user_fav_ids)
+                    if b.get('avg_rating') is not None and b.get('rating_count', 0) > 0:
+                        b_dict['avg_rating'] = float(b['avg_rating'])
+                        b_dict['rating_display'] = f"{b_dict['avg_rating']:.1f}"
+                        b_dict['has_ratings'] = True
+                    else:
+                        b_dict['avg_rating'] = None
+                        b_dict['rating_display'] = 'Not rated yet'
+                        b_dict['rating_count'] = 0
+                        b_dict['has_ratings'] = False
                     books_list.append(b_dict)
     except Exception as e:
         app.logger.warning(f"Error fetching books from DB: {e}")
@@ -1183,6 +1225,32 @@ def dashboard():
     else:
         displayed_books = books_list
 
+    # 5. Fetch completed books pending rating prompt for this user
+    pending_rating_books = []
+    try:
+        with db.cursor() as cur:
+            cur.execute("""
+                SELECT b.id, b.title, b.cover, b.slug
+                FROM reading_history rh
+                JOIN books b ON rh.book_id = b.id
+                LEFT JOIN book_reviews br ON rh.user_id = br.user_id AND rh.book_id = br.book_id
+                WHERE rh.user_id = %s
+                  AND b.is_published = 1
+                  AND rh.is_completed = 1
+                  AND (br.id IS NULL)
+                ORDER BY rh.last_opened_at DESC
+            """, (current_user.id,))
+            pending_rows = cur.fetchall()
+            for pr in pending_rows:
+                pending_rating_books.append({
+                    'id': pr['id'],
+                    'title': pr['title'],
+                    'slug': pr['slug'],
+                    'cover': pr['cover']
+                })
+    except Exception as e:
+        app.logger.warning(f"Error checking pending rating books: {e}")
+
     return render_template(
         'dashboard.html',
         books=displayed_books,
@@ -1192,7 +1260,8 @@ def dashboard():
         current_filter=category_filter,
         reading_history_items=reading_history_items,
         total_favorites=len(user_fav_ids),
-        total_books=len(books_list)
+        total_books=len(books_list),
+        pending_rating_books=pending_rating_books
     )
 
 
@@ -1279,12 +1348,26 @@ def reader(book_identifier):
     except Exception as e:
         app.logger.error(f"Error checking reading history for book {book.get('id')}: {e}")
 
+    # 3. Check if current user has already rated or skipped this book
+    has_rated = False
+    try:
+        with db.cursor() as cur:
+            cur.execute("""
+                SELECT status FROM book_reviews WHERE user_id = %s AND book_id = %s
+            """, (current_user.id, book['id']))
+            rev = cur.fetchone()
+            if rev and rev['status'] in ('submitted', 'skipped'):
+                has_rated = True
+    except Exception as e:
+        app.logger.warning(f"Error checking rating status for book {book.get('id')}: {e}")
+
     spreads = get_book_spreads(book)
     return render_template(
         'reader.html',
         book=book,
         spreads=spreads,
         last_read_page=last_read_page,
+        has_rated=has_rated,
         is_preview=False
     )
 
@@ -1391,7 +1474,7 @@ def toggle_favorite():
 @app.route('/api/reading-history/save', methods=['POST'])
 @login_required
 def save_reading_history():
-    """Save user's current reading page progress in MySQL."""
+    """Save user's current reading page progress in MySQL and detect completion."""
     data = request.get_json(silent=True) or request.form
     if data.get('is_preview'):
         return jsonify({'success': True, 'preview': True})
@@ -1400,23 +1483,166 @@ def save_reading_history():
         book_id = int(data.get('book_id'))
         page_number = int(data.get('page_number', 1))
         total_pages = int(data.get('total_pages', 16))
+        is_completed = bool(data.get('is_completed', False))
     except (TypeError, ValueError):
         return jsonify({'success': False, 'message': 'Invalid input parameters.'}), 400
 
     db = get_db()
     try:
         with db.cursor() as cur:
-            cur.execute("""
-                INSERT INTO reading_history (user_id, book_id, last_read_page, total_pages, last_opened_at)
-                VALUES (%s, %s, %s, %s, NOW())
-                ON DUPLICATE KEY UPDATE 
-                    last_read_page = VALUES(last_read_page),
-                    total_pages = VALUES(total_pages),
-                    last_opened_at = NOW()
-            """, (current_user.id, book_id, page_number, total_pages))
-        return jsonify({'success': True, 'saved_page': page_number, 'book_id': book_id})
+            if is_completed:
+                cur.execute("""
+                    INSERT INTO reading_history (user_id, book_id, last_read_page, total_pages, is_completed, completed_at, last_opened_at)
+                    VALUES (%s, %s, %s, %s, 1, NOW(), NOW())
+                    ON DUPLICATE KEY UPDATE 
+                        last_read_page = VALUES(last_read_page),
+                        total_pages = VALUES(total_pages),
+                        is_completed = 1,
+                        completed_at = COALESCE(completed_at, NOW()),
+                        last_opened_at = NOW()
+                """, (current_user.id, book_id, page_number, total_pages))
+            else:
+                cur.execute("""
+                    INSERT INTO reading_history (user_id, book_id, last_read_page, total_pages, last_opened_at)
+                    VALUES (%s, %s, %s, %s, NOW())
+                    ON DUPLICATE KEY UPDATE 
+                        last_read_page = VALUES(last_read_page),
+                        total_pages = VALUES(total_pages),
+                        last_opened_at = NOW()
+                """, (current_user.id, book_id, page_number, total_pages))
+
+            # Determine whether rating popup should be shown
+            should_prompt_rating = False
+            if is_completed:
+                cur.execute("""
+                    SELECT status FROM book_reviews WHERE user_id = %s AND book_id = %s
+                """, (current_user.id, book_id))
+                rev = cur.fetchone()
+                if not rev:
+                    should_prompt_rating = True
+
+        return jsonify({
+            'success': True,
+            'saved_page': page_number,
+            'book_id': book_id,
+            'is_completed': is_completed,
+            'should_prompt_rating': should_prompt_rating
+        })
     except Exception as e:
         app.logger.error(f"Error saving reading history: {e}")
+        return jsonify({'success': False, 'message': 'Database error occurred.'}), 500
+
+
+@app.route('/api/book/<int:book_id>/rate', methods=['POST'])
+@login_required
+def submit_book_rating(book_id):
+    """
+    Submit a one-time 1-5 star rating and optional review for a completed storybook.
+    Ensures:
+    - User has completed reading the book (or admin).
+    - User has not already submitted a rating.
+    - Rating is an integer between 1 and 5.
+    - Review text is optional and sanitized.
+    """
+    data = request.get_json(silent=True) or request.form
+    try:
+        rating = int(data.get('rating', 0))
+    except (TypeError, ValueError):
+        return jsonify({'success': False, 'message': 'Rating must be an integer between 1 and 5.'}), 400
+
+    if rating < 1 or rating > 5:
+        return jsonify({'success': False, 'message': 'Rating must be between 1 and 5 stars.'}), 400
+
+    review_text = (data.get('review_text') or '').strip()
+    if len(review_text) > 1000:
+        review_text = review_text[:1000]
+
+    db = get_db()
+    try:
+        with db.cursor() as cur:
+            # 1. Verify book exists
+            cur.execute("SELECT id, title FROM books WHERE id = %s", (book_id,))
+            book = cur.fetchone()
+            if not book:
+                return jsonify({'success': False, 'message': 'Storybook not found.'}), 404
+
+            # 2. Verify reading history / completion
+            cur.execute("""
+                SELECT is_completed, last_read_page, total_pages 
+                FROM reading_history 
+                WHERE user_id = %s AND book_id = %s
+            """, (current_user.id, book_id))
+            history = cur.fetchone()
+
+            is_done = False
+            if history:
+                if history.get('is_completed'):
+                    is_done = True
+                elif history['last_read_page'] >= history['total_pages'] - 2 or (history['last_read_page'] == 1 and history['total_pages'] <= 2):
+                    is_done = True
+                    cur.execute("""
+                        UPDATE reading_history 
+                        SET is_completed = 1, completed_at = NOW() 
+                        WHERE user_id = %s AND book_id = %s
+                    """, (current_user.id, book_id))
+
+            if not is_done and current_user.role != 'admin':
+                return jsonify({'success': False, 'message': 'Please complete reading the storybook before rating.'}), 403
+
+            # 3. Check existing review to prevent duplicate submissions
+            cur.execute("SELECT id, status FROM book_reviews WHERE user_id = %s AND book_id = %s", (current_user.id, book_id))
+            existing = cur.fetchone()
+            if existing and existing['status'] == 'submitted':
+                return jsonify({'success': False, 'message': 'You have already rated this storybook.'}), 409
+
+            # 4. Insert or update review record
+            cur.execute("""
+                INSERT INTO book_reviews (user_id, book_id, rating, review_text, status, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, 'submitted', NOW(), NOW())
+                ON DUPLICATE KEY UPDATE
+                    rating = VALUES(rating),
+                    review_text = VALUES(review_text),
+                    status = 'submitted',
+                    updated_at = NOW()
+            """, (current_user.id, book_id, rating, review_text if review_text else None))
+
+        return jsonify({
+            'success': True,
+            'message': 'Thank you for your rating! ✨',
+            'book_id': book_id,
+            'rating': rating
+        })
+    except Exception as e:
+        app.logger.error(f"Error submitting rating for book {book_id}: {e}")
+        return jsonify({'success': False, 'message': 'Database error occurred.'}), 500
+
+
+@app.route('/api/book/<int:book_id>/skip-rating', methods=['POST'])
+@login_required
+def skip_book_rating(book_id):
+    """
+    Record that the user skipped the rating prompt for this book.
+    Ensures they will not be prompted again.
+    """
+    db = get_db()
+    try:
+        with db.cursor() as cur:
+            cur.execute("SELECT id, status FROM book_reviews WHERE user_id = %s AND book_id = %s", (current_user.id, book_id))
+            existing = cur.fetchone()
+            if existing and existing['status'] == 'submitted':
+                return jsonify({'success': True, 'message': 'Already rated.'})
+
+            cur.execute("""
+                INSERT INTO book_reviews (user_id, book_id, rating, review_text, status, created_at, updated_at)
+                VALUES (%s, %s, NULL, NULL, 'skipped', NOW(), NOW())
+                ON DUPLICATE KEY UPDATE
+                    status = CASE WHEN status = 'submitted' THEN status ELSE 'skipped' END,
+                    updated_at = NOW()
+            """, (current_user.id, book_id))
+
+        return jsonify({'success': True, 'message': 'Rating prompt skipped.', 'book_id': book_id})
+    except Exception as e:
+        app.logger.error(f"Error skipping rating for book {book_id}: {e}")
         return jsonify({'success': False, 'message': 'Database error occurred.'}), 500
 
 
@@ -1591,15 +1817,20 @@ def admin_dashboard():
             cur.execute("""
                 SELECT b.id, b.title, b.cover, b.category,
                        COUNT(DISTINCT rh.user_id) AS reader_count,
-                       (SELECT COUNT(*) FROM user_favorites uf WHERE uf.book_id = b.id) AS fav_count
+                       (SELECT COUNT(*) FROM user_favorites uf WHERE uf.book_id = b.id) AS fav_count,
+                       ROUND(AVG(r.rating), 1) AS avg_rating,
+                       COUNT(r.rating) AS rating_count
                 FROM books b
                 LEFT JOIN reading_history rh ON b.id = rh.book_id
+                LEFT JOIN book_reviews r ON b.id = r.book_id AND r.status = 'submitted' AND r.rating IS NOT NULL
                 GROUP BY b.id, b.title, b.cover, b.category
                 ORDER BY reader_count DESC, fav_count DESC
                 LIMIT 1;
             """)
             pop_row = cur.fetchone()
             if pop_row and (pop_row['reader_count'] > 0 or pop_row['fav_count'] > 0):
+                if pop_row.get('avg_rating') is not None:
+                    pop_row['avg_rating'] = float(pop_row['avg_rating'])
                 stats['most_popular_book'] = pop_row
             else:
                 # Default spotlight on Twinkle if no reading history yet
@@ -1608,6 +1839,8 @@ def admin_dashboard():
                 if twk:
                     twk['reader_count'] = 0
                     twk['fav_count'] = 0
+                    twk['avg_rating'] = None
+                    twk['rating_count'] = 0
                     stats['most_popular_book'] = twk
 
             # Reading sessions timeline (last 7 days)
@@ -1862,20 +2095,51 @@ def admin_user_delete(user_id):
 @app.route('/admin/books')
 @admin_required
 def admin_books():
-    """Chronicle of all storybooks: cover thumbnails, status, page count, and actions."""
+    """Chronicle of all storybooks: cover thumbnails, status, page count, ratings, reviews, and actions."""
     db = get_db()
     books = []
     try:
         with db.cursor() as cur:
+            # 1. Fetch books with aggregated rating stats
             cur.execute("""
                 SELECT b.id, b.slug, b.title, b.author, b.category, b.cover, 
-                       b.pages, b.duration, b.rating, b.is_published, b.created_at
+                       b.pages, b.duration, b.is_published, b.created_at,
+                       ROUND(AVG(r.rating), 1) AS avg_rating,
+                       COUNT(r.rating) AS rating_count
                 FROM books b
+                LEFT JOIN book_reviews r ON b.id = r.book_id AND r.status = 'submitted' AND r.rating IS NOT NULL
+                GROUP BY b.id
                 ORDER BY b.id ASC;
             """)
             books = cur.fetchall()
+
+            # 2. Fetch all submitted reviews with reviewer details
+            cur.execute("""
+                SELECT r.id, r.book_id, r.user_id, r.rating, r.review_text, r.created_at,
+                       u.full_name, u.email
+                FROM book_reviews r
+                JOIN users u ON r.user_id = u.id
+                WHERE r.status = 'submitted' AND r.rating IS NOT NULL
+                ORDER BY r.created_at DESC;
+            """)
+            all_reviews = cur.fetchall()
+            reviews_by_book = {}
+            for rev in all_reviews:
+                rev['created_at_formatted'] = format_datetime(rev.get('created_at'))
+                reviews_by_book.setdefault(rev['book_id'], []).append(rev)
+
             for b in books:
                 b['created_at_formatted'] = format_datetime(b.get('created_at'))
+                b['reviews'] = reviews_by_book.get(b['id'], [])
+                if b.get('avg_rating') is not None and b.get('rating_count', 0) > 0:
+                    b['avg_rating'] = float(b['avg_rating'])
+                    b['rating_display'] = f"{b['avg_rating']:.1f}"
+                    b['has_ratings'] = True
+                else:
+                    b['avg_rating'] = None
+                    b['rating_display'] = 'Not rated yet'
+                    b['rating_count'] = 0
+                    b['has_ratings'] = False
     except Exception as e:
         app.logger.error(f"Error listing books: {e}")
 

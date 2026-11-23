@@ -71,6 +71,7 @@
                 <div class="small text-muted">
                     <span>{{ stats.most_popular_book.reader_count }} readers</span> · 
                     <span>{{ stats.most_popular_book.fav_count }} favorites</span> · 
+                    <span>{% if stats.most_popular_book.avg_rating %}★ {{ stats.most_popular_book.avg_rating }} ({{ stats.most_popular_book.rating_count }}){% else %}Not rated yet{% endif %}</span> · 
                     <span>{{ stats.most_popular_book.category }}</span>
                 </div>
             </div>

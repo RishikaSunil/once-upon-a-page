@@ -1,0 +1,80 @@
+<!-- Magical Storybook Rating Modal -->
+<div class="modal fade magical-rating-modal" id="storybookRatingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content enchanted-rating-card shadow-lg border-0 rounded-4 overflow-hidden">
+            <!-- Glowing magical border top aura -->
+            <div class="enchanted-card-glow"></div>
+            
+            <div class="modal-header border-0 pb-0 pt-3 px-4 position-relative">
+                <button type="button" class="btn-close btn-close-rating ms-auto" id="btnRatingClose" aria-label="Close" title="Skip for now"></button>
+            </div>
+
+            <div class="modal-body text-center px-4 pt-1 pb-4">
+                <div class="rating-wand-badge mb-2">
+                    <span class="fs-1 animate-twinkle-sparkle d-inline-block">✨</span>
+                </div>
+                
+                <h3 class="modal-title enchanted-rating-title fw-bold mb-1" id="ratingModalLabel">
+                    Did you enjoy this story?
+                </h3>
+                
+                <p class="rating-book-subtitle text-muted mb-3">
+                    Tell us what you thought about <strong class="text-primary-emphasis" id="ratingModalBookTitle">Twinkle</strong>!
+                </p>
+
+                <!-- Interactive 1-5 Star Rating Selector -->
+                <div class="star-rating-container d-flex justify-content-center gap-2 my-2" id="starRatingSelector" role="group" aria-label="Star Rating">
+                    <button type="button" class="star-btn" data-value="1" aria-label="1 Star" title="1 Star">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button type="button" class="star-btn" data-value="2" aria-label="2 Stars" title="2 Stars">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button type="button" class="star-btn" data-value="3" aria-label="3 Stars" title="3 Stars">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button type="button" class="star-btn" data-value="4" aria-label="4 Stars" title="4 Stars">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button type="button" class="star-btn" data-value="5" aria-label="5 Stars" title="5 Stars">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                </div>
+
+                <!-- Dynamic feedback text under stars -->
+                <div class="rating-feedback-label text-warning-emphasis fw-semibold small mb-3" id="ratingFeedbackLabel" style="min-height: 22px;">
+                    Tap a star to rate
+                </div>
+
+                <!-- Optional Review Textarea -->
+                <div class="text-start mb-3">
+                    <label for="ratingReviewText" class="form-label small fw-semibold text-muted d-flex justify-content-between mb-1">
+                        <span>Write a little review <span class="fw-normal text-muted">(optional)</span></span>
+                        <span class="char-count text-muted" id="ratingCharCount">0 / 500</span>
+                    </label>
+                    <textarea class="form-control enchanted-review-input rounded-3" 
+                              id="ratingReviewText" 
+                              rows="3" 
+                              maxlength="500" 
+                              placeholder="What was your favorite part of this bedtime story? (Optional)..."></textarea>
+                </div>
+
+                <!-- Status Feedback Boxes -->
+                <div class="rating-alert-box alert alert-danger py-2 px-3 small rounded-3 d-none mb-3" id="ratingAlertBox"></div>
+                <div class="rating-success-box alert alert-success py-2 px-3 small rounded-3 d-none mb-3" id="ratingSuccessBox">
+                    <span>Thank you for your rating! 💛</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-column gap-2 mt-2">
+                    <button type="button" class="btn btn-storybook-primary py-2 rounded-pill fw-semibold shadow-sm w-100" id="btnSubmitRating" disabled>
+                        <span class="btn-content"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Submit Rating</span>
+                    </button>
+                    <button type="button" class="btn btn-link text-muted text-decoration-none small py-1" id="btnSkipRating">
+                        Skip for now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

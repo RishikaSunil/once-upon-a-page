@@ -5168,6 +5168,128 @@ html, body {
     }
 }
 
+/* ==========================================================================
+   Enchanted Storybook Rating & Review Modal
+   ========================================================================== */
+
+.magical-rating-modal .modal-backdrop {
+    backdrop-filter: blur(8px);
+    background: rgba(15, 10, 30, 0.72);
+}
+
+.enchanted-rating-card {
+    background: linear-gradient(145deg, #FFFFFF 0%, #F9F6FE 100%);
+    border: 1px solid rgba(230, 200, 120, 0.45) !important;
+    position: relative;
+    box-shadow: 0 16px 40px rgba(70, 30, 110, 0.18), 0 0 24px rgba(255, 215, 0, 0.12) !important;
+}
+
+body.dark-theme .enchanted-rating-card,
+.dark-theme .enchanted-rating-card {
+    background: linear-gradient(145deg, #1A132C 0%, #150F24 100%) !important;
+    border: 1px solid rgba(255, 215, 100, 0.35) !important;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55), 0 0 28px rgba(255, 215, 0, 0.15) !important;
+    color: #F3EDFC;
+}
+
+.enchanted-card-glow {
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #FFD54F, #E0B0FF, #FFD54F, transparent);
+    border-radius: 3px;
+    opacity: 0.85;
+}
+
+.enchanted-rating-title {
+    color: #2E1B4E;
+    letter-spacing: -0.3px;
+}
+
+body.dark-theme .enchanted-rating-title,
+.dark-theme .enchanted-rating-title {
+    color: #FFF8E7 !important;
+}
+
+.star-rating-container {
+    user-select: none;
+}
+
+.star-btn {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 4px;
+    font-size: 2.25rem;
+    color: rgba(200, 185, 225, 0.45);
+    cursor: pointer;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.18s ease, filter 0.18s ease;
+    outline: none !important;
+}
+
+.star-btn:hover {
+    transform: scale(1.22);
+    color: #FFC107 !important;
+    filter: drop-shadow(0 0 8px rgba(255, 193, 7, 0.7));
+}
+
+.star-btn.active {
+    color: #FFC107 !important;
+    filter: drop-shadow(0 0 6px rgba(255, 193, 7, 0.5));
+}
+
+.star-btn:active {
+    transform: scale(0.95);
+}
+
+.enchanted-review-input {
+    background: #FFFFFF;
+    border: 1px solid rgba(190, 175, 225, 0.5);
+    color: #2D2245;
+    font-size: 0.92rem;
+    resize: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.dark-theme .enchanted-review-input,
+.dark-theme .enchanted-review-input {
+    background: #231B38 !important;
+    border-color: rgba(180, 150, 230, 0.3) !important;
+    color: #F8F5FE !important;
+}
+
+.enchanted-review-input:focus {
+    border-color: #A370F7 !important;
+    box-shadow: 0 0 0 3px rgba(163, 112, 247, 0.18) !important;
+}
+
+.btn-close-rating {
+    opacity: 0.6;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.btn-close-rating:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+body.dark-theme .btn-close-rating,
+.dark-theme .btn-close-rating {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+@media (max-width: 576px) {
+    .star-btn {
+        font-size: 1.85rem;
+        padding: 0 2px;
+    }
+    .enchanted-rating-card {
+        margin: 0 10px;
+    }
+}
+
+
 
 
 

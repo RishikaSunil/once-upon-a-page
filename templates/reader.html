@@ -54,6 +54,7 @@
          data-last-read-page="{{ last_read_page or 1 }}" 
          data-total-pages="{{ book.pages or (spreads|length * 2) }}"
          data-is-preview="{{ 'true' if is_preview else 'false' }}"
+         data-has-rated="{{ 'true' if has_rated else 'false' }}"
          style="display: none;"></div>
 
     <!-- Dreamy Reading Room Ambient Sky Background -->
@@ -311,8 +312,14 @@
         </div>
     </div>
 
+    <!-- Rating Modal Partial -->
+    {% include 'partials/rating_modal.html' %}
+
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Rating Modal Script -->
+    <script src="{{ url_for('static', filename='js/rating-modal.js') }}"></script>
 
     <!-- StPageFlip.js (Page-Flip) Vendor Script -->
     <script src="{{ url_for('static', filename='js/page-flip.browser.js') }}"></script>

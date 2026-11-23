@@ -57,7 +57,17 @@
                         {% endif %}
                     </td>
                     <td>
-                        <span class="small text-muted"><i class="fa-solid fa-star text-warning me-1"></i>{{ b.rating }}</span>
+                        {% if b.has_ratings %}
+                            <span class="badge bg-light text-dark border">
+                                <i class="fa-solid fa-star text-warning me-1"></i><strong>{{ b.rating_display }}</strong>
+                                <span class="text-muted small ms-1">({{ b.rating_count }})</span>
+                            </span>
+                            <button type="button" class="btn btn-sm btn-link text-primary p-0 ms-1" data-bs-toggle="modal" data-bs-target="#reviewsModal_{{ b.id }}" title="View {{ b.rating_count }} reader reviews">
+                                <i class="fa-solid fa-comments"></i>
+                            </button>
+                        {% else %}
+                            <span class="small text-muted"><i class="fa-regular fa-star text-muted me-1"></i>Not rated yet</span>
+                        {% endif %}
                     </td>
                     <td class="small text-muted">{{ b.created_at_formatted }}</td>
                     <td class="text-end">
@@ -99,4 +109,53 @@
         </table>
     </div>
 </div>
+
+<!-- Admin Reviews Modals for Each Storybook -->
+{% for b in books %}
+{% if b.reviews %}
+<div class="modal fade text-start" id="reviewsModal_{{ b.id }}" tabindex="-1" aria-labelledby="reviewsModalLabel_{{ b.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom pb-3">
+                <div>
+                    <h5 class="modal-title fw-bold mb-0" id="reviewsModalLabel_{{ b.id }}">Reader Reviews: {{ b.title }}</h5>
+                    <div class="small text-muted">
+                        <i class="fa-solid fa-star text-warning me-1"></i><strong>{{ b.rating_display }}</strong> average rating from {{ b.rating_count }} reader review{% if b.rating_count != 1 %}s{% endif %}
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="d-flex flex-column gap-3">
+                    {% for rev in b.reviews %}
+                    <div class="p-3 rounded-3 bg-light border">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div>
+                                <strong class="text-dark">{{ rev.full_name }}</strong>
+                                <span class="text-muted small ms-1">({{ rev.email }})</span>
+                            </div>
+                            <span class="text-warning small">
+                                {% for s in range(1, 6) %}
+                                    <i class="fa-solid fa-star {% if s <= rev.rating %}text-warning{% else %}text-muted opacity-25{% endif %}"></i>
+                                {% endfor %}
+                            </span>
+                        </div>
+                        <div class="small text-muted mb-2">{{ rev.created_at_formatted }}</div>
+                        {% if rev.review_text %}
+                            <p class="mb-0 text-secondary" style="white-space: pre-line;">"{{ rev.review_text }}"</p>
+                        {% else %}
+                            <p class="mb-0 text-muted fst-italic small">No written note provided.</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer border-top pt-2">
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
 {% endblock %}
